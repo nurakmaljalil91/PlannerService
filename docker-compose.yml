@@ -1,0 +1,6 @@
+services:
+  plannerservice:
+    image: ${DOCKER_REGISTRY-}plannerservice
+    build:
+      context: .
+      dockerfile: Dockerfile
