@@ -1,3 +1,4 @@
+#nullable enable
 using Application.Common.Models;
 using Application.TodoLists.Commands;
 using Application.TodoLists.Models;
@@ -14,6 +15,9 @@ namespace WebAPI.UnitTests.Controllers;
 /// </summary>
 public class TodoListsControllerTests
 {
+    /// <summary>
+    /// Verifies that getting all todo lists returns an OK result with a response.
+    /// </summary>
     [Fact]
     public async Task GetAllTodoLists_ReturnsOkResultWithResponse()
     {
@@ -30,6 +34,9 @@ public class TodoListsControllerTests
         Assert.Same(response, ok.Value);
     }
 
+    /// <summary>
+    /// Verifies that creating a todo list returns a CreatedAtAction result.
+    /// </summary>
     [Fact]
     public async Task CreateTodoList_ReturnsCreatedAtAction()
     {
@@ -48,6 +55,9 @@ public class TodoListsControllerTests
         Assert.Same(response, created.Value);
     }
 
+    /// <summary>
+    /// Verifies that updating a todo list returns an OK result.
+    /// </summary>
     [Fact]
     public async Task UpdateTodoList_ReturnsOkResult()
     {
@@ -61,6 +71,9 @@ public class TodoListsControllerTests
         Assert.Same(response, ok.Value);
     }
 
+    /// <summary>
+    /// Verifies that deleting a todo list sends a command with the correct ID.
+    /// </summary>
     [Fact]
     public async Task DeleteTodoList_SendsCommandWithId()
     {

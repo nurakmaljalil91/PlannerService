@@ -1,4 +1,5 @@
-﻿using Domain.Common;
+﻿#nullable enable
+using Domain.Common;
 
 namespace Domain.UnitTests.Common;
 

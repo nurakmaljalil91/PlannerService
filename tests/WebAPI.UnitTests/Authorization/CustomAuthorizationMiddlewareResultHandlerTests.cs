@@ -1,3 +1,4 @@
+#nullable enable
 using System.Text.Json;
 using Domain.Common;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +15,9 @@ public class CustomAuthorizationMiddlewareResultHandlerTests
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
+    /// <summary>
+    /// Verifies that a forbidden result is written to the response.
+    /// </summary>
     [Fact]
     public async Task HandleAsync_WritesForbiddenResponse()
     {
@@ -28,6 +32,9 @@ public class CustomAuthorizationMiddlewareResultHandlerTests
         Assert.Equal("Forbidden.", response.Message);
     }
 
+    /// <summary>
+    /// Verifies that an unauthorized result is written to the response.
+    /// </summary>
     [Fact]
     public async Task HandleAsync_WritesUnauthorizedResponse()
     {

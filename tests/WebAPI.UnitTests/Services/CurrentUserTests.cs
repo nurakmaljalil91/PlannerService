@@ -1,3 +1,4 @@
+#nullable enable
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using WebAPI.Services;
@@ -9,6 +10,9 @@ namespace WebAPI.UnitTests.Services;
 /// </summary>
 public class CurrentUserTests
 {
+    /// <summary>
+    /// Verifies that the username is correctly retrieved from the NameIdentifier claim.
+    /// </summary>
     [Fact]
     public void Username_ReturnsNameIdentifierClaim()
     {
@@ -26,6 +30,9 @@ public class CurrentUserTests
         Assert.Equal("alice", currentUser.Username);
     }
 
+    /// <summary>
+    /// Verifies that roles are correctly retrieved from the Role claims.
+    /// </summary>
     [Fact]
     public void GetRoles_ReturnsRoleClaims()
     {
@@ -47,6 +54,9 @@ public class CurrentUserTests
         Assert.Contains("Support", roles);
     }
 
+    /// <summary>
+    /// Verifies that an empty list of roles is returned when there is no HTTP context.
+    /// </summary>
     [Fact]
     public void GetRoles_ReturnsEmptyWhenNoContext()
     {

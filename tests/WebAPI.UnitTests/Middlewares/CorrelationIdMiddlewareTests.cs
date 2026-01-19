@@ -1,3 +1,4 @@
+#nullable enable
 using Microsoft.AspNetCore.Http;
 using WebAPI.Middlewares;
 
@@ -8,6 +9,9 @@ namespace WebAPI.UnitTests.Middlewares;
 /// </summary>
 public class CorrelationIdMiddlewareTests
 {
+    /// <summary>
+    /// Verifies that the correlation ID from the request header is used when provided.
+    /// </summary>
     [Fact]
     public async Task InvokeAsync_UsesRequestHeaderWhenProvided()
     {
@@ -27,6 +31,9 @@ public class CorrelationIdMiddlewareTests
         Assert.Equal("corr-123", context.Response.Headers["X-Correlation-ID"].ToString());
     }
 
+    /// <summary>
+    /// Verifies that a new correlation ID is generated when it is missing from the request header.
+    /// </summary>
     [Fact]
     public async Task InvokeAsync_GeneratesCorrelationIdWhenMissing()
     {

@@ -1,3 +1,4 @@
+#nullable enable
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -17,6 +18,10 @@ public sealed class AuthController : ControllerBase
 {
     private readonly IConfiguration _configuration;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AuthController"/> class.
+    /// </summary>
+    /// <param name="configuration">The application configuration.</param>
     public AuthController(IConfiguration configuration)
     {
         _configuration = configuration;
@@ -95,6 +100,17 @@ public sealed class AuthController : ControllerBase
     }
 }
 
+/// <summary>
+/// Represents a login request.
+/// </summary>
+/// <param name="Username">The username.</param>
+/// <param name="Email">The email address.</param>
+/// <param name="Roles">The roles to be included in the token.</param>
 public sealed record LoginRequest(string? Username, string? Email, string[]? Roles);
 
+/// <summary>
+/// Represents the response containing an authentication token.
+/// </summary>
+/// <param name="Token">The JWT token.</param>
+/// <param name="ExpiresAtUtc">The token expiration date and time in UTC.</param>
 public sealed record AuthTokenResponse(string Token, DateTime ExpiresAtUtc);

@@ -1,17 +1,28 @@
+#nullable enable
 using System.Net;
 using System.Net.Http.Json;
 using Domain.Common;
 
 namespace IntegrationTests;
 
+/// <summary>
+/// Integration tests for the <see cref="WebAPI.Controllers.TodoListsController"/>.
+/// </summary>
 [Collection("Integration")]
 public class TodoListsControllerIntegrationTests : ApiTestBase
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TodoListsControllerIntegrationTests"/> class.
+    /// </summary>
+    /// <param name="factory">The API factory.</param>
     public TodoListsControllerIntegrationTests(ApiFactory factory)
         : base(factory)
     {
     }
 
+    /// <summary>
+    /// Verifies that the full flow of creating, reading, updating, and deleting a todo list works.
+    /// </summary>
     [Fact]
     public async Task TodoLists_FullFlow_Works()
     {

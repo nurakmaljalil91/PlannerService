@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿#nullable enable
+using Application.Common.Interfaces;
 using Domain.Common;
 using Infrastructure.Data.Interceptors;
 using Microsoft.EntityFrameworkCore;

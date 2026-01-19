@@ -32,6 +32,12 @@ public class GetTodoListsQueryHandler : IRequestHandler<GetTodoListsQuery, BaseR
         _context = context;
     }
 
+    /// <summary>
+    /// Handles the request to get a paginated list of todo lists.
+    /// </summary>
+    /// <param name="request">The get todo lists query.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A paginated list of todo lists.</returns>
     public async Task<BaseResponse<PaginatedEnumerable<TodoListDto>>> Handle(GetTodoListsQuery request, CancellationToken cancellationToken)
     {
         var query = _context.TodoLists

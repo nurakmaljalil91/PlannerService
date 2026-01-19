@@ -13,6 +13,9 @@ namespace Application.TodoItems.Commands;
 /// </summary>
 public class DeleteTodoItemCommand : IRequest<BaseResponse<object>>
 {
+    /// <summary>
+    /// Gets or sets the ID of the todo item to be deleted.
+    /// </summary>
     public long Id { get; set; }
 
     /// <summary>

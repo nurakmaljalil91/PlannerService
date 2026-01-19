@@ -13,6 +13,14 @@ public sealed class CustomAuthorizationMiddlewareResultHandler : IAuthorizationM
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private readonly AuthorizationMiddlewareResultHandler _defaultHandler = new();
 
+    /// <summary>
+    /// Handles authorization failures and formats the response.
+    /// </summary>
+    /// <param name="next">The next middleware in the pipeline.</param>
+    /// <param name="context">The HTTP context.</param>
+    /// <param name="policy">The authorization policy.</param>
+    /// <param name="authorizeResult">The result of the authorization.</param>
+    /// <returns>A task that represents the completion of the operation.</returns>
     public async Task HandleAsync(
         RequestDelegate next,
         HttpContext context,

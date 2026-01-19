@@ -1,3 +1,4 @@
+#nullable enable
 using System.Net;
 using System.Text.Json;
 using Application.Common.Exceptions;
@@ -15,6 +16,9 @@ public class ExceptionHandlingMiddlewareTests
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
+    /// <summary>
+    /// Verifies that a <see cref="ValidationException"/> is handled correctly.
+    /// </summary>
     [Fact]
     public async Task InvokeAsync_HandlesValidationException()
     {
@@ -33,6 +37,9 @@ public class ExceptionHandlingMiddlewareTests
         Assert.True(response.Errors!.ContainsKey("Title"));
     }
 
+    /// <summary>
+    /// Verifies that a <see cref="NotFoundException"/> is handled correctly.
+    /// </summary>
     [Fact]
     public async Task InvokeAsync_HandlesNotFoundException()
     {
@@ -46,6 +53,9 @@ public class ExceptionHandlingMiddlewareTests
         Assert.Equal("Missing", response.Message);
     }
 
+    /// <summary>
+    /// Verifies that a <see cref="ForbiddenAccessException"/> is handled correctly.
+    /// </summary>
     [Fact]
     public async Task InvokeAsync_HandlesForbiddenAccessException()
     {
@@ -59,6 +69,9 @@ public class ExceptionHandlingMiddlewareTests
         Assert.Equal("Forbidden.", response.Message);
     }
 
+    /// <summary>
+    /// Verifies that an unknown exception is handled correctly.
+    /// </summary>
     [Fact]
     public async Task InvokeAsync_HandlesUnknownException()
     {

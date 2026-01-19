@@ -1,3 +1,4 @@
+#nullable enable
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Domain.Common;
@@ -12,6 +13,9 @@ namespace WebAPI.UnitTests.Controllers;
 /// </summary>
 public class AuthControllerTests
 {
+    /// <summary>
+    /// Verifies that the login endpoint returns a Bad Request when the identity is missing.
+    /// </summary>
     [Fact]
     public void Login_ReturnsBadRequestWhenRequestMissingIdentity()
     {
@@ -25,6 +29,9 @@ public class AuthControllerTests
         Assert.Equal("Username or email is required.", response.Message);
     }
 
+    /// <summary>
+    /// Verifies that the login endpoint returns a Server Error when the JWT configuration is missing.
+    /// </summary>
     [Fact]
     public void Login_ReturnsServerErrorWhenJwtConfigMissing()
     {
@@ -38,6 +45,9 @@ public class AuthControllerTests
         Assert.Equal("JWT configuration is missing.", response.Message);
     }
 
+    /// <summary>
+    /// Verifies that the login endpoint returns a token with the default role.
+    /// </summary>
     [Fact]
     public void Login_ReturnsTokenWithDefaultRole()
     {
@@ -61,6 +71,9 @@ public class AuthControllerTests
         Assert.Contains(token.Claims, claim => claim.Type == ClaimTypes.Email && claim.Value == "user@example.com");
     }
 
+    /// <summary>
+    /// Verifies that the login endpoint uses explicit roles when provided.
+    /// </summary>
     [Fact]
     public void Login_UsesExplicitRolesWhenProvided()
     {
