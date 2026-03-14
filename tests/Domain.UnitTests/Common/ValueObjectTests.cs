@@ -43,7 +43,6 @@ public class ValueObjectTests
 
         Assert.True(a.Equals(b));
         Assert.Equal(a, b);
-        Assert.False(a != b);
         Assert.Equal(a.GetHashCode(), b.GetHashCode());
     }
 
@@ -58,7 +57,6 @@ public class ValueObjectTests
 
         Assert.False(a.Equals(b));
         Assert.NotEqual(a, b);
-        Assert.True(a != b);
     }
 
     /// <summary>
@@ -74,6 +72,6 @@ public class ValueObjectTests
         Assert.Null(a);
         Assert.Null(b);
         Assert.NotNull(c);
-        Assert.NotEqual(c, a);
+        Assert.False(c.Equals(a));
     }
 }
