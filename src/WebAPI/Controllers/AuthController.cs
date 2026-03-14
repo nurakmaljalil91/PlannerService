@@ -70,12 +70,9 @@ public sealed class AuthController : ControllerBase
 
         if (request.Roles is { Length: > 0 })
         {
-            foreach (var role in request.Roles)
+            foreach (var role in request.Roles.Where(static role => !string.IsNullOrWhiteSpace(role)))
             {
-                if (!string.IsNullOrWhiteSpace(role))
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
-                }
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
         }
         else

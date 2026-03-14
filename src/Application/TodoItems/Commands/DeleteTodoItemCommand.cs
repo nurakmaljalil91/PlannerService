@@ -14,14 +14,14 @@ namespace Application.TodoItems.Commands;
 public class DeleteTodoItemCommand : IRequest<BaseResponse<object>>
 {
     /// <summary>
-    /// Gets or sets the ID of the todo item to be deleted.
+    /// Gets or sets the ID of the task item to be deleted.
     /// </summary>
     public long Id { get; set; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DeleteTodoItemCommand"/> class with the specified todos item ID.
+    /// Initializes a new instance of the <see cref="DeleteTodoItemCommand"/> class with the specified task item ID.
     /// </summary>
-    /// <param name="id">The ID of the todos item to delete.</param>
+    /// <param name="id">The ID of the task item to delete.</param>
     public DeleteTodoItemCommand(long id)
     {
         Id = id;
@@ -29,7 +29,7 @@ public class DeleteTodoItemCommand : IRequest<BaseResponse<object>>
 }
 
 /// <summary>
-/// Handles the <see cref="DeleteTodoItemCommand"/> to delete a todos item.
+/// Handles the <see cref="DeleteTodoItemCommand"/> to delete a task item.
 /// </summary>
 public class DeleteTodoItemCommandHandler : IRequestHandler<DeleteTodoItemCommand, BaseResponse<object>>
 {
@@ -45,9 +45,9 @@ public class DeleteTodoItemCommandHandler : IRequestHandler<DeleteTodoItemComman
     }
 
     /// <summary>
-    /// Handles the delete command for a todos item.
+    /// Handles the delete command for a task item.
     /// </summary>
-    /// <param name="request">The delete todos item command.</param>
+    /// <param name="request">The delete task item command.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>A response indicating the result of the delete operation.</returns>
     public async Task<BaseResponse<object>> Handle(DeleteTodoItemCommand request, CancellationToken cancellationToken)

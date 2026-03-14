@@ -70,9 +70,18 @@ public sealed class ExceptionHandlingMiddleware: IMiddleware
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             context.Response.ContentType = "application/json";
 
-            var response = ex.ErrorResponse != null
-                ? BaseResponse<object>.Fail(ex.ErrorResponse.Message ?? "Bad request.", ex.ErrorResponse.Errors)
-                : BaseResponse<object>.Fail(string.IsNullOrWhiteSpace(ex.Message) ? "Bad request." : ex.Message);
+            BaseResponse<object> response;
+            if (ex.ErrorResponse != null)
+            {
+                response = BaseResponse<object>.Fail(
+                    ex.ErrorResponse.Message ?? "Bad request.",
+                    ex.ErrorResponse.Errors);
+            }
+            else
+            {
+                response = BaseResponse<object>.Fail(
+                    string.IsNullOrWhiteSpace(ex.Message) ? "Bad request." : ex.Message);
+            }
 
             await context.Response.WriteAsync(
                 JsonSerializer.Serialize(response, JsonOptions));

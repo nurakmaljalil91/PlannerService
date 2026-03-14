@@ -25,12 +25,6 @@ public class ValueObjectTests
             yield return Text!;
         }
 
-        public static bool operator ==(SampleValueObject left, SampleValueObject right)
-            => EqualOperator(left, right);
-
-        public static bool operator !=(SampleValueObject left, SampleValueObject right)
-            => NotEqualOperator(left, right);
-
         public override bool Equals(object? obj)
             => base.Equals(obj);
 
@@ -48,7 +42,7 @@ public class ValueObjectTests
         var b = new SampleValueObject(1, "a");
 
         Assert.True(a.Equals(b));
-        Assert.True(a == b);
+        Assert.Equal(a, b);
         Assert.False(a != b);
         Assert.Equal(a.GetHashCode(), b.GetHashCode());
     }
@@ -63,7 +57,7 @@ public class ValueObjectTests
         var b = new SampleValueObject(2, "a");
 
         Assert.False(a.Equals(b));
-        Assert.False(a == b);
+        Assert.NotEqual(a, b);
         Assert.True(a != b);
     }
 
@@ -77,7 +71,9 @@ public class ValueObjectTests
         SampleValueObject? b = null;
         var c = new SampleValueObject(1, "a");
 
-        Assert.True(a == b);
-        Assert.True(a != c);
+        Assert.Null(a);
+        Assert.Null(b);
+        Assert.NotNull(c);
+        Assert.NotEqual(c, a);
     }
 }

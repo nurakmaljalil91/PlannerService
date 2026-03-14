@@ -16,7 +16,7 @@ namespace WebAPI.UnitTests.Controllers;
 public class TodoListsControllerTests
 {
     /// <summary>
-    /// Verifies that getting all todo lists returns an OK result with a response.
+    /// Verifies that getting all task lists returns an OK result with a response.
     /// </summary>
     [Fact]
     public async Task GetAllTodoLists_ReturnsOkResultWithResponse()
@@ -35,7 +35,7 @@ public class TodoListsControllerTests
     }
 
     /// <summary>
-    /// Verifies that creating a todo list returns a CreatedAtAction result.
+    /// Verifies that creating a task list returns a CreatedAtAction result.
     /// </summary>
     [Fact]
     public async Task CreateTodoList_ReturnsCreatedAtAction()
@@ -56,7 +56,7 @@ public class TodoListsControllerTests
     }
 
     /// <summary>
-    /// Verifies that updating a todo list returns an OK result.
+    /// Verifies that updating a task list returns an OK result.
     /// </summary>
     [Fact]
     public async Task UpdateTodoList_ReturnsOkResult()
@@ -72,7 +72,7 @@ public class TodoListsControllerTests
     }
 
     /// <summary>
-    /// Verifies that deleting a todo list sends a command with the correct ID.
+    /// Verifies that deleting a task list sends a command with the correct ID.
     /// </summary>
     [Fact]
     public async Task DeleteTodoList_SendsCommandWithId()

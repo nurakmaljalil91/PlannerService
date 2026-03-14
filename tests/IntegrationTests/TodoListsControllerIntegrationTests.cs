@@ -21,7 +21,7 @@ public class TodoListsControllerIntegrationTests : ApiTestBase
     }
 
     /// <summary>
-    /// Verifies that the full flow of creating, reading, updating, and deleting a todo list works.
+    /// Verifies that the full flow of creating, reading, updating, and deleting a task list works.
     /// </summary>
     [Fact]
     public async Task TodoLists_FullFlow_Works()

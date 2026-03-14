@@ -115,47 +115,47 @@ public abstract class ApiTestBase
     }
 
     /// <summary>
-    /// Represents a todo item response.
+    /// Represents a task item response.
     /// </summary>
     protected sealed class TodoItemResponse
     {
         /// <summary>
-        /// Gets or sets the ID of the todo item.
+        /// Gets or sets the ID of the task item.
         /// </summary>
         public long Id { get; set; }
         /// <summary>
-        /// Gets or sets the ID of the list the todo item belongs to.
+        /// Gets or sets the ID of the list the task item belongs to.
         /// </summary>
         public long ListId { get; set; }
         /// <summary>
-        /// Gets or sets the title of the todo item.
+        /// Gets or sets the title of the task item.
         /// </summary>
         public string? Title { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether the todo item is done.
+        /// Gets or sets a value indicating whether the task item is done.
         /// </summary>
         public bool Done { get; set; }
     }
 
     /// <summary>
-    /// Represents a todo list response.
+    /// Represents a task list response.
     /// </summary>
     protected sealed class TodoListResponse
     {
         /// <summary>
-        /// Gets or sets the ID of the todo list.
+        /// Gets or sets the ID of the task list.
         /// </summary>
         public long Id { get; set; }
         /// <summary>
-        /// Gets or sets the title of the todo list.
+        /// Gets or sets the title of the task list.
         /// </summary>
         public string? Title { get; set; }
         /// <summary>
-        /// Gets or sets the colour of the todo list.
+        /// Gets or sets the colour of the task list.
         /// </summary>
         public string? Colour { get; set; }
         /// <summary>
-        /// Gets or sets the items in the todo list.
+        /// Gets or sets the items in the task list.
         /// </summary>
         public IReadOnlyCollection<TodoItemResponse>? Items { get; set; }
     }

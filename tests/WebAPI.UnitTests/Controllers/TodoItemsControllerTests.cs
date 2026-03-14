@@ -16,7 +16,7 @@ namespace WebAPI.UnitTests.Controllers;
 public class TodoItemsControllerTests
 {
     /// <summary>
-    /// Verifies that getting todo items returns an OK result with a response.
+    /// Verifies that getting task items returns an OK result with a response.
     /// </summary>
     [Fact]
     public async Task GetTodoItems_ReturnsOkResultWithResponse()
@@ -35,7 +35,7 @@ public class TodoItemsControllerTests
     }
 
     /// <summary>
-    /// Verifies that creating a todo item returns a CreatedAtAction result.
+    /// Verifies that creating a task item returns a CreatedAtAction result.
     /// </summary>
     [Fact]
     public async Task CreateTodoItem_ReturnsCreatedAtAction()
@@ -55,7 +55,7 @@ public class TodoItemsControllerTests
     }
 
     /// <summary>
-    /// Verifies that updating a todo item returns an OK result.
+    /// Verifies that updating a task item returns an OK result.
     /// </summary>
     [Fact]
     public async Task UpdateTodoItem_ReturnsOkResult()
@@ -71,12 +71,12 @@ public class TodoItemsControllerTests
     }
 
     /// <summary>
-    /// Verifies that deleting a todo item sends a command with the correct ID.
+    /// Verifies that deleting a task item sends a command with the correct ID.
     /// </summary>
     [Fact]
     public async Task DeleteTodoItem_SendsCommandWithId()
     {
-        var response = BaseResponse<object>.Ok(null, "deleted");
+        var response = BaseResponse<object>.Ok(new object(), "deleted");
         var mediator = new TestMediator(_ => Task.FromResult<object>(response));
         var controller = new TodoItemsController(mediator);
 
