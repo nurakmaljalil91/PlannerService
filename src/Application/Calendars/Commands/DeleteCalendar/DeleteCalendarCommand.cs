@@ -1,3 +1,4 @@
+#nullable enable
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Domain.Common;
@@ -22,14 +23,17 @@ public class DeleteCalendarCommand : IRequest<BaseResponse<string>>
 public class DeleteCalendarCommandHandler : IRequestHandler<DeleteCalendarCommand, BaseResponse<string>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteCalendarCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public DeleteCalendarCommandHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public DeleteCalendarCommandHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -45,6 +49,11 @@ public class DeleteCalendarCommandHandler : IRequestHandler<DeleteCalendarComman
         if (entity == null)
         {
             throw new NotFoundException($"Calendar with id {request.Id} was not found.");
+        }
+
+        if (entity.UserId != _user.UserId)
+        {
+            throw new ForbiddenAccessException();
         }
 
         _context.Calendars.Remove(entity);

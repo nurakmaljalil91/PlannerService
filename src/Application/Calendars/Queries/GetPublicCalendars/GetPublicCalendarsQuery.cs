@@ -6,44 +6,41 @@ using Domain.Common;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Calendars.Queries.GetCalendars;
+namespace Application.Calendars.Queries.GetPublicCalendars;
 
 /// <summary>
-/// Represents a paginated query for retrieving calendars.
+/// Represents a paginated query for retrieving public calendars.
 /// </summary>
-public class GetCalendarsQuery : PaginatedRequest, IRequest<BaseResponse<PaginatedEnumerable<CalendarDto>>>;
+public class GetPublicCalendarsQuery : PaginatedRequest, IRequest<BaseResponse<PaginatedEnumerable<CalendarDto>>>;
 
 /// <summary>
-/// Handles the retrieval of a paginated list of calendars scoped to the current user.
+/// Handles the retrieval of a paginated list of public calendars.
 /// </summary>
-public class GetCalendarsQueryHandler : IRequestHandler<GetCalendarsQuery, BaseResponse<PaginatedEnumerable<CalendarDto>>>
+public class GetPublicCalendarsQueryHandler : IRequestHandler<GetPublicCalendarsQuery, BaseResponse<PaginatedEnumerable<CalendarDto>>>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IUser _user;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GetCalendarsQueryHandler"/> class.
+    /// Initializes a new instance of the <see cref="GetPublicCalendarsQueryHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    /// <param name="user">The current authenticated user.</param>
-    public GetCalendarsQueryHandler(IApplicationDbContext context, IUser user)
+    public GetPublicCalendarsQueryHandler(IApplicationDbContext context)
     {
         _context = context;
-        _user = user;
     }
 
     /// <summary>
-    /// Handles the request to retrieve a paginated list of calendars for the current user.
+    /// Handles the request to retrieve a paginated list of public calendars.
     /// </summary>
     /// <param name="request">The query parameters for pagination, sorting, and filtering.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A paginated collection of <see cref="CalendarDto"/> instances.</returns>
+    /// <returns>A paginated collection of public <see cref="CalendarDto"/> instances.</returns>
     public async Task<BaseResponse<PaginatedEnumerable<CalendarDto>>> Handle(
-        GetCalendarsQuery request,
+        GetPublicCalendarsQuery request,
         CancellationToken cancellationToken)
     {
         var query = _context.Calendars
-            .Where(c => c.UserId == _user.UserId)
+            .Where(c => c.IsPublic)
             .AsQueryable()
             .ApplyFilters(request.Filter)
             .ApplySorting(request.SortBy, request.Descending);
@@ -63,6 +60,6 @@ public class GetCalendarsQueryHandler : IRequestHandler<GetCalendarsQuery, BaseR
 
         return BaseResponse<PaginatedEnumerable<CalendarDto>>.Ok(
             paginatedResult,
-            $"Successfully retrieved {paginatedResult.Items?.Count() ?? 0} calendars.");
+            $"Successfully retrieved {paginatedResult.Items?.Count() ?? 0} public calendars.");
     }
 }

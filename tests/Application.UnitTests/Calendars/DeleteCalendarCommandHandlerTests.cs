@@ -12,7 +12,7 @@ namespace Application.UnitTests.Calendars;
 /// </summary>
 public class DeleteCalendarCommandHandlerTests
 {
-    private static IUser MakeUser() => new StubUser(Guid.NewGuid());
+    private static IUser MakeUser(Guid? userId = null) => new StubUser(userId ?? Guid.NewGuid());
 
     /// <summary>
     /// Verifies that <see cref="DeleteCalendarCommandHandler.Handle"/> throws a <see cref="NotFoundException"/>
@@ -22,7 +22,7 @@ public class DeleteCalendarCommandHandlerTests
     public async Task Handle_WhenCalendarMissing_ThrowsNotFoundException()
     {
         await using var context = TestDbContextFactory.Create();
-        var handler = new DeleteCalendarCommandHandler(context);
+        var handler = new DeleteCalendarCommandHandler(context, MakeUser());
 
         var command = new DeleteCalendarCommand { Id = 999 };
 
@@ -37,11 +37,13 @@ public class DeleteCalendarCommandHandlerTests
     public async Task Handle_ExistingCalendar_DeletesAndReturnsSuccess()
     {
         await using var context = TestDbContextFactory.Create();
+        var userId = Guid.NewGuid();
+        var user = MakeUser(userId);
 
-        var createHandler = new CreateCalendarCommandHandler(context, MakeUser());
+        var createHandler = new CreateCalendarCommandHandler(context, user);
         var created = await createHandler.Handle(new CreateCalendarCommand { Title = "To Delete" }, CancellationToken.None);
 
-        var deleteHandler = new DeleteCalendarCommandHandler(context);
+        var deleteHandler = new DeleteCalendarCommandHandler(context, user);
         var result = await deleteHandler.Handle(
             new DeleteCalendarCommand { Id = created.Data!.Id },
             CancellationToken.None);

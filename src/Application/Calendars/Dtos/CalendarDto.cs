@@ -23,6 +23,8 @@ public class CalendarDto
         IsGoogleCalendar = source.IsGoogleCalendar;
         GoogleCalendarId = source.GoogleCalendarId;
         UserId = source.UserId;
+        IsPublic = source.IsPublic;
+        IsVisible = source.IsVisible;
     }
 
     /// <summary>
@@ -64,4 +66,14 @@ public class CalendarDto
     /// Gets the identifier of the user who owns the calendar.
     /// </summary>
     public Guid UserId { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether this calendar is publicly visible to all users.
+    /// </summary>
+    public bool IsPublic { get; init; }
+
+    /// <summary>
+    /// Gets a value indicating whether this calendar is visible to its owner.
+    /// </summary>
+    public bool IsVisible { get; init; }
 }

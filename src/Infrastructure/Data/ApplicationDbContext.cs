@@ -41,6 +41,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     /// <inheritdoc />
     public DbSet<Reminder> Reminders => Set<Reminder>();
 
+    /// <inheritdoc />
+    public DbSet<CalendarSubscription> CalendarSubscriptions => Set<CalendarSubscription>();
+
     /// <summary>
     /// Configures the entity model for the context.
     /// </summary>

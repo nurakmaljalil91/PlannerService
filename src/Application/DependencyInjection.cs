@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Application.Calendars.Commands.CreateCalendar;
+using Application.Calendars.Commands.CreatePublicCalendar;
 using Application.Calendars.Commands.DeleteCalendar;
+using Application.Calendars.Commands.SubscribeToCalendar;
+using Application.Calendars.Commands.ToggleCalendarVisibility;
+using Application.Calendars.Commands.ToggleSubscriptionVisibility;
+using Application.Calendars.Commands.UnsubscribeFromCalendar;
 using Application.Calendars.Commands.UpdateCalendar;
 using Application.Calendars.Dtos;
 using Application.Calendars.Queries.GetCalendarById;
 using Application.Calendars.Queries.GetCalendars;
+using Application.Calendars.Queries.GetPublicCalendars;
+using Application.Calendars.Queries.GetUserSubscriptions;
 using Application.Common.Behaviours;
 using Application.Common.Models;
 using Application.Events.Commands.CreateEvent;
@@ -78,6 +85,14 @@ public static class DependencyInjection
         services.AddScoped<IRequestHandler<CreateCalendarCommand, BaseResponse<CalendarDto>>, CreateCalendarCommandHandler>();
         services.AddScoped<IRequestHandler<UpdateCalendarCommand, BaseResponse<CalendarDto>>, UpdateCalendarCommandHandler>();
         services.AddScoped<IRequestHandler<DeleteCalendarCommand, BaseResponse<string>>, DeleteCalendarCommandHandler>();
+        services.AddScoped<IRequestHandler<GetPublicCalendarsQuery, BaseResponse<PaginatedEnumerable<CalendarDto>>>,
+            GetPublicCalendarsQueryHandler>();
+        services.AddScoped<IRequestHandler<CreatePublicCalendarCommand, BaseResponse<CalendarDto>>, CreatePublicCalendarCommandHandler>();
+        services.AddScoped<IRequestHandler<SubscribeToCalendarCommand, BaseResponse<CalendarSubscriptionDto>>, SubscribeToCalendarCommandHandler>();
+        services.AddScoped<IRequestHandler<UnsubscribeFromCalendarCommand, BaseResponse<string>>, UnsubscribeFromCalendarCommandHandler>();
+        services.AddScoped<IRequestHandler<GetUserSubscriptionsQuery, BaseResponse<IEnumerable<CalendarSubscriptionDto>>>, GetUserSubscriptionsQueryHandler>();
+        services.AddScoped<IRequestHandler<ToggleCalendarVisibilityCommand, BaseResponse<CalendarDto>>, ToggleCalendarVisibilityCommandHandler>();
+        services.AddScoped<IRequestHandler<ToggleSubscriptionVisibilityCommand, BaseResponse<CalendarSubscriptionDto>>, ToggleSubscriptionVisibilityCommandHandler>();
 
         // Event handlers
         services.AddScoped<IRequestHandler<GetEventsQuery, BaseResponse<PaginatedEnumerable<EventDto>>>,

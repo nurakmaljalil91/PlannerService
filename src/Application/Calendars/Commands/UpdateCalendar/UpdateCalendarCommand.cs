@@ -45,14 +45,17 @@ public class UpdateCalendarCommand : IRequest<BaseResponse<CalendarDto>>
 public class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalendarCommand, BaseResponse<CalendarDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateCalendarCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public UpdateCalendarCommandHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public UpdateCalendarCommandHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -68,6 +71,11 @@ public class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalendarComman
         if (entity == null)
         {
             throw new NotFoundException($"Calendar with id {request.Id} was not found.");
+        }
+
+        if (entity.UserId != _user.UserId)
+        {
+            throw new ForbiddenAccessException();
         }
 
         entity.Title = request.Title ?? entity.Title;

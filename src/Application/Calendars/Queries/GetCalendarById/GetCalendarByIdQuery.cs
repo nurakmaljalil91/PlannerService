@@ -1,3 +1,4 @@
+#nullable enable
 using Application.Calendars.Dtos;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
@@ -23,14 +24,17 @@ public class GetCalendarByIdQuery : IRequest<BaseResponse<CalendarDto>>
 public class GetCalendarByIdQueryHandler : IRequestHandler<GetCalendarByIdQuery, BaseResponse<CalendarDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetCalendarByIdQueryHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public GetCalendarByIdQueryHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public GetCalendarByIdQueryHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -46,6 +50,11 @@ public class GetCalendarByIdQueryHandler : IRequestHandler<GetCalendarByIdQuery,
         if (entity == null)
         {
             throw new NotFoundException($"Calendar with id {request.Id} was not found.");
+        }
+
+        if (entity.UserId != _user.UserId && !entity.IsPublic)
+        {
+            throw new ForbiddenAccessException();
         }
 
         return BaseResponse<CalendarDto>.Ok(new CalendarDto(entity));

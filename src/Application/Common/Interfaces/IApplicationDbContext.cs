@@ -39,6 +39,11 @@ public interface IApplicationDbContext
     DbSet<Reminder> Reminders { get; }
 
     /// <summary>
+    /// Gets the set of <see cref="CalendarSubscription"/> entities.
+    /// </summary>
+    DbSet<CalendarSubscription> CalendarSubscriptions { get; }
+
+    /// <summary>
     /// Saves all changes made in this context to the database asynchronously.
     /// </summary>
     /// <param name="cancellationToken">A token to cancel the operation.</param>

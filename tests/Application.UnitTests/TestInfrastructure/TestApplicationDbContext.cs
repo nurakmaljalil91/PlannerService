@@ -49,6 +49,11 @@ public sealed class TestApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Reminder> Reminders => Set<Reminder>();
 
     /// <summary>
+    /// Gets the <see cref="DbSet{CalendarSubscription}"/> representing the collection of calendar subscriptions.
+    /// </summary>
+    public DbSet<CalendarSubscription> CalendarSubscriptions => Set<CalendarSubscription>();
+
+    /// <summary>
     /// Configures the entity mappings for the context.
     /// </summary>
     /// <param name="modelBuilder">The builder being used to construct the model for this context.</param>
@@ -103,6 +108,15 @@ public sealed class TestApplicationDbContext : DbContext, IApplicationDbContext
             builder.HasOne(x => x.Event)
                 .WithMany(x => x.Reminders)
                 .HasForeignKey(x => x.EventId);
+        });
+
+        modelBuilder.Entity<CalendarSubscription>(builder =>
+        {
+            builder.HasKey(x => x.Id);
+            builder.HasOne(x => x.Calendar)
+                .WithMany()
+                .HasForeignKey(x => x.CalendarId);
+            builder.HasIndex(x => new { x.UserId, x.CalendarId }).IsUnique();
         });
     }
 }

@@ -1,9 +1,16 @@
 using Application.Calendars.Commands.CreateCalendar;
+using Application.Calendars.Commands.CreatePublicCalendar;
 using Application.Calendars.Commands.DeleteCalendar;
+using Application.Calendars.Commands.SubscribeToCalendar;
+using Application.Calendars.Commands.ToggleCalendarVisibility;
+using Application.Calendars.Commands.ToggleSubscriptionVisibility;
+using Application.Calendars.Commands.UnsubscribeFromCalendar;
 using Application.Calendars.Commands.UpdateCalendar;
 using Application.Calendars.Dtos;
 using Application.Calendars.Queries.GetCalendarById;
 using Application.Calendars.Queries.GetCalendars;
+using Application.Calendars.Queries.GetPublicCalendars;
+using Application.Calendars.Queries.GetUserSubscriptions;
 using Application.Common.Models;
 using Domain.Common;
 using Mediator;
@@ -13,7 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebAPI.Controllers;
 
 /// <summary>
-/// API controller for managing calendars.
+/// API controller for managing calendars, public calendars, and subscriptions.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -32,7 +39,40 @@ public class CalendarsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all calendars with optional pagination, sorting, and filtering.
+    /// Retrieves all public calendars with optional pagination, sorting, and filtering.
+    /// </summary>
+    /// <param name="query">The query parameters for pagination, sorting, and filtering.</param>
+    /// <returns>A paginated list of public <see cref="CalendarDto"/> instances.</returns>
+    [HttpGet("public")]
+    [AllowAnonymous]
+    public async Task<ActionResult<BaseResponse<PaginatedEnumerable<CalendarDto>>>> GetPublicCalendars(
+        [FromQuery] GetPublicCalendarsQuery query)
+        => Ok(await _mediator.Send(query));
+
+    /// <summary>
+    /// Creates a new public calendar. Requires Admin role.
+    /// </summary>
+    /// <param name="command">The command containing the calendar details.</param>
+    /// <returns>The created <see cref="CalendarDto"/>.</returns>
+    [HttpPost("public")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<BaseResponse<CalendarDto>>> CreatePublicCalendar(
+        [FromBody] CreatePublicCalendarCommand command)
+    {
+        var result = await _mediator.Send(command);
+        return CreatedAtAction(nameof(GetCalendarById), new { id = result.Data?.Id }, result);
+    }
+
+    /// <summary>
+    /// Retrieves all calendar subscriptions for the current user.
+    /// </summary>
+    /// <returns>A collection of <see cref="CalendarSubscriptionDto"/> instances.</returns>
+    [HttpGet("subscriptions")]
+    public async Task<ActionResult<BaseResponse<IEnumerable<CalendarSubscriptionDto>>>> GetUserSubscriptions()
+        => Ok(await _mediator.Send(new GetUserSubscriptionsQuery()));
+
+    /// <summary>
+    /// Retrieves all calendars for the current user with optional pagination, sorting, and filtering.
     /// </summary>
     /// <param name="query">The query parameters for pagination, sorting, and filtering.</param>
     /// <returns>A paginated list of <see cref="CalendarDto"/>.</returns>
@@ -40,6 +80,42 @@ public class CalendarsController : ControllerBase
     public async Task<ActionResult<BaseResponse<PaginatedEnumerable<CalendarDto>>>> GetCalendars(
         [FromQuery] GetCalendarsQuery query)
         => Ok(await _mediator.Send(query));
+
+    /// <summary>
+    /// Subscribes the current user to a public calendar.
+    /// </summary>
+    /// <param name="calendarId">The identifier of the calendar to subscribe to.</param>
+    /// <returns>The created <see cref="CalendarSubscriptionDto"/>.</returns>
+    [HttpPost("{calendarId:long}/subscribe")]
+    public async Task<ActionResult<BaseResponse<CalendarSubscriptionDto>>> SubscribeToCalendar(long calendarId)
+        => Ok(await _mediator.Send(new SubscribeToCalendarCommand { CalendarId = calendarId }));
+
+    /// <summary>
+    /// Unsubscribes the current user from a calendar.
+    /// </summary>
+    /// <param name="calendarId">The identifier of the calendar to unsubscribe from.</param>
+    /// <returns>A response indicating the result.</returns>
+    [HttpDelete("{calendarId:long}/subscribe")]
+    public async Task<ActionResult<BaseResponse<string>>> UnsubscribeFromCalendar(long calendarId)
+        => Ok(await _mediator.Send(new UnsubscribeFromCalendarCommand { CalendarId = calendarId }));
+
+    /// <summary>
+    /// Toggles the visibility of a calendar owned by the current user.
+    /// </summary>
+    /// <param name="calendarId">The identifier of the calendar.</param>
+    /// <returns>The updated <see cref="CalendarDto"/>.</returns>
+    [HttpPatch("{calendarId:long}/visibility")]
+    public async Task<ActionResult<BaseResponse<CalendarDto>>> ToggleCalendarVisibility(long calendarId)
+        => Ok(await _mediator.Send(new ToggleCalendarVisibilityCommand { CalendarId = calendarId }));
+
+    /// <summary>
+    /// Toggles the visibility of a subscription for the current user.
+    /// </summary>
+    /// <param name="calendarId">The identifier of the subscribed calendar.</param>
+    /// <returns>The updated <see cref="CalendarSubscriptionDto"/>.</returns>
+    [HttpPatch("subscriptions/{calendarId:long}/visibility")]
+    public async Task<ActionResult<BaseResponse<CalendarSubscriptionDto>>> ToggleSubscriptionVisibility(long calendarId)
+        => Ok(await _mediator.Send(new ToggleSubscriptionVisibilityCommand { CalendarId = calendarId }));
 
     /// <summary>
     /// Retrieves a single calendar by its identifier.

@@ -31,6 +31,14 @@ public class CalendarConfiguration : IEntityTypeConfiguration<Calendar>
         builder.Property(c => c.UserId)
             .IsRequired();
 
+        builder.Property(c => c.IsPublic)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(c => c.IsVisible)
+            .IsRequired()
+            .HasDefaultValue(true);
+
         builder.Navigation(c => c.Events)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 

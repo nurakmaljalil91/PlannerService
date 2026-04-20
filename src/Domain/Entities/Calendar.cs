@@ -40,9 +40,19 @@ public class Calendar : BaseAuditableEntity
     public string? GoogleCalendarId { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this calendar is publicly visible to all users.
+    /// </summary>
+    public bool IsPublic { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this calendar is visible to its owner.
+    /// </summary>
+    public bool IsVisible { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the ID of the user who owns the calendar.
     /// </summary>
-    public Guid UserId { get; set; } 
+    public Guid UserId { get; set; }
 
     /// <summary>
     /// Gets the list of events associated with this calendar.
