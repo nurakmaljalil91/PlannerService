@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+using Application.Common.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +29,26 @@ public sealed class TestApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
 
     /// <summary>
+    /// Gets the <see cref="DbSet{Calendar}"/> representing the collection of calendars.
+    /// </summary>
+    public DbSet<Calendar> Calendars => Set<Calendar>();
+
+    /// <summary>
+    /// Gets the <see cref="DbSet{Event}"/> representing the collection of calendar events.
+    /// </summary>
+    public DbSet<Event> Events => Set<Event>();
+
+    /// <summary>
+    /// Gets the <see cref="DbSet{PlannerTask}"/> representing the collection of planner tasks.
+    /// </summary>
+    public DbSet<PlannerTask> PlannerTasks => Set<PlannerTask>();
+
+    /// <summary>
+    /// Gets the <see cref="DbSet{Reminder}"/> representing the collection of reminders.
+    /// </summary>
+    public DbSet<Reminder> Reminders => Set<Reminder>();
+
+    /// <summary>
     /// Configures the entity mappings for the context.
     /// </summary>
     /// <param name="modelBuilder">The builder being used to construct the model for this context.</param>
@@ -48,6 +68,41 @@ public sealed class TestApplicationDbContext : DbContext, IApplicationDbContext
             builder.HasOne(x => x.List)
                 .WithMany(x => x.Items)
                 .HasForeignKey(x => x.ListId);
+        });
+
+        modelBuilder.Entity<Calendar>(builder =>
+        {
+            builder.HasKey(x => x.Id);
+            builder.Navigation(x => x.Events)
+                .UsePropertyAccessMode(PropertyAccessMode.Field);
+            builder.Navigation(x => x.Tasks)
+                .UsePropertyAccessMode(PropertyAccessMode.Field);
+        });
+
+        modelBuilder.Entity<Event>(builder =>
+        {
+            builder.HasKey(x => x.Id);
+            builder.HasOne(x => x.Calendar)
+                .WithMany(x => x.Events)
+                .HasForeignKey(x => x.CalendarId);
+            builder.Navigation(x => x.Reminders)
+                .UsePropertyAccessMode(PropertyAccessMode.Field);
+        });
+
+        modelBuilder.Entity<PlannerTask>(builder =>
+        {
+            builder.HasKey(x => x.Id);
+            builder.HasOne(x => x.Calendar)
+                .WithMany(x => x.Tasks)
+                .HasForeignKey(x => x.CalendarId);
+        });
+
+        modelBuilder.Entity<Reminder>(builder =>
+        {
+            builder.HasKey(x => x.Id);
+            builder.HasOne(x => x.Event)
+                .WithMany(x => x.Reminders)
+                .HasForeignKey(x => x.EventId);
         });
     }
 }

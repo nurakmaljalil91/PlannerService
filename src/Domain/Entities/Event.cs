@@ -57,7 +57,7 @@ public class Event : BaseAuditableEntity
     /// <summary>
     /// Gets or sets the ID of the calendar to which this event belongs.
     /// </summary>
-    public int CalendarId { get; set; }
+    public long CalendarId { get; set; }
 
     /// <summary>
     /// Gets or sets the calendar to which this event belongs.

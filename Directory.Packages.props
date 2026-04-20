@@ -28,6 +28,7 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" Version="10.0.0" />
     <!-- Packages for Infrastructure -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1" />
     <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
     <PackageVersion Include="EFCore.NamingConventions" Version="10.0.0-rc.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.1" />

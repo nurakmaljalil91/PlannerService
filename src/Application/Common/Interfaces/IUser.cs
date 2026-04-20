@@ -13,6 +13,11 @@ public interface IUser
     string? Username { get; }
 
     /// <summary>
+    /// Gets the unique identifier (sub claim) of the current user, or <c>null</c> if not available.
+    /// </summary>
+    Guid? UserId { get; }
+
+    /// <summary>
     /// Gets the list of roles associated with the current user.
     /// </summary>
     List<string> GetRoles();

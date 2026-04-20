@@ -16,6 +16,7 @@ public class TodoItemDto
     /// Gets or sets the unique identifier of the to-do item.
     /// </summary>
     public long Id { get; set; }
+
     /// <summary>
     /// Gets or sets the identifier of the to-do list to which this item belongs.
     /// </summary>
@@ -25,6 +26,16 @@ public class TodoItemDto
     /// Gets or sets the title of the to-do item.
     /// </summary>
     public string? Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets an optional note associated with the to-do item.
+    /// </summary>
+    public string? Note { get; set; }
+
+    /// <summary>
+    /// Gets or sets the priority level of the to-do item.
+    /// </summary>
+    public PriorityLevel Priority { get; set; }
 
     /// <summary>
     /// Gets a value indicating whether the to-do item is completed.
@@ -40,6 +51,8 @@ public class TodoItemDto
         Id = source.Id;
         ListId = source.ListId;
         Title = source.Title;
+        Note = source.Note;
+        Priority = source.Priority;
         Done = false;
     }
 }

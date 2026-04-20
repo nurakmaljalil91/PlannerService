@@ -1,10 +1,10 @@
-﻿using Domain.Entities;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Common.Interfaces;
 
 /// <summary>
-/// Represents the application's database context, providing access to TodoLists and TodoItems.
+/// Represents the application's database context, providing access to all entity sets.
 /// </summary>
 public interface IApplicationDbContext
 {
@@ -17,6 +17,26 @@ public interface IApplicationDbContext
     /// Gets the set of <see cref="TodoItem"/> entities.
     /// </summary>
     DbSet<TodoItem> TodoItems { get; }
+
+    /// <summary>
+    /// Gets the set of <see cref="Calendar"/> entities.
+    /// </summary>
+    DbSet<Calendar> Calendars { get; }
+
+    /// <summary>
+    /// Gets the set of <see cref="Event"/> entities.
+    /// </summary>
+    DbSet<Event> Events { get; }
+
+    /// <summary>
+    /// Gets the set of <see cref="PlannerTask"/> entities.
+    /// </summary>
+    DbSet<PlannerTask> PlannerTasks { get; }
+
+    /// <summary>
+    /// Gets the set of <see cref="Reminder"/> entities.
+    /// </summary>
+    DbSet<Reminder> Reminders { get; }
 
     /// <summary>
     /// Saves all changes made in this context to the database asynchronously.

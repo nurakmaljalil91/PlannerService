@@ -23,6 +23,16 @@ public class CurrentUser : IUser
     /// <inheritdoc/>
     public string? Username => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
+    /// <inheritdoc/>
+    public Guid? UserId
+    {
+        get
+        {
+            var value = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Guid.TryParse(value, out var id) ? id : null;
+        }
+    }
+
     /// <summary>
     /// Gets the roles associated with the current authenticated user.
     /// </summary>  

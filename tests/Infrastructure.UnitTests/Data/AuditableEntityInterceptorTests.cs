@@ -100,6 +100,7 @@ public class AuditableEntityInterceptorTests
         }
 
         public string? Username { get; }
+        public Guid? UserId => null;
 
         public List<string> GetRoles() => new();
     }

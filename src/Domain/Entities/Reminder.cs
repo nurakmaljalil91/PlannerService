@@ -26,7 +26,7 @@ public class Reminder : BaseAuditableEntity
     /// <summary>
     /// Gets or sets the ID of the event to which this reminder belongs.
     /// </summary>
-    public int EventId { get; set; }
+    public long EventId { get; set; }
 
     /// <summary>
     /// Gets or sets the event to which this reminder belongs.

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -10,11 +10,10 @@ namespace Infrastructure.Data;
 
 /// <summary>
 /// Represents the Entity Framework database context for the application,
-/// providing access to <see cref="TodoList"/> and <see cref="TodoItem"/> entities.
+/// providing access to all domain entity sets.
 /// </summary>
 public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class using the specified options.
     /// </summary>
@@ -29,6 +28,18 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     /// <inheritdoc />
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
+
+    /// <inheritdoc />
+    public DbSet<Calendar> Calendars => Set<Calendar>();
+
+    /// <inheritdoc />
+    public DbSet<Event> Events => Set<Event>();
+
+    /// <inheritdoc />
+    public DbSet<PlannerTask> PlannerTasks => Set<PlannerTask>();
+
+    /// <inheritdoc />
+    public DbSet<Reminder> Reminders => Set<Reminder>();
 
     /// <summary>
     /// Configures the entity model for the context.
