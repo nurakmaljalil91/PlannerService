@@ -39,6 +39,9 @@ public class CalendarConfiguration : IEntityTypeConfiguration<Calendar>
             .IsRequired()
             .HasDefaultValue(true);
 
+        builder.Property(c => c.Color)
+            .HasMaxLength(20);
+
         builder.Navigation(c => c.Events)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 

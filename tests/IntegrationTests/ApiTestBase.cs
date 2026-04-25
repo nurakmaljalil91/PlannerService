@@ -1,9 +1,12 @@
 #nullable enable
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
-using Domain.Common;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IntegrationTests;
 
@@ -43,10 +46,10 @@ public abstract class ApiTestBase
     /// Creates a new authenticated HTTP client.
     /// </summary>
     /// <returns>An authenticated <see cref="HttpClient"/> instance.</returns>
-    protected async Task<HttpClient> CreateAuthenticatedClientAsync()
+    protected HttpClient CreateAuthenticatedClient()
     {
         var client = CreateClient();
-        var token = await GetTokenAsync(client);
+        var token = CreateToken();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         return client;
     }
@@ -64,31 +67,28 @@ public abstract class ApiTestBase
         return payload!;
     }
 
-    private static async Task<string> GetTokenAsync(HttpClient client)
+    private static string CreateToken()
     {
-        var login = new
+        var claims = new List<Claim>
         {
-            Username = "integration-user",
-            Email = "integration@example.com"
+            new(ClaimTypes.NameIdentifier, "integration-user"),
+            new(ClaimTypes.Email, "integration@example.com"),
+            new(ClaimTypes.Role, "Admin")
         };
 
-        var response = await client.PostAsJsonAsync("/api/Auth/login", login);
-        response.EnsureSuccessStatusCode();
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ApiFactory.JwtKey));
+        var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+        var expires = DateTime.UtcNow.AddMinutes(ApiFactory.JwtExpiryMinutes);
 
-        var payload = await ReadResponseAsync<BaseResponse<AuthTokenResponse>>(response);
-        Assert.True(payload.Success);
-        Assert.NotNull(payload.Data);
-        Assert.False(string.IsNullOrWhiteSpace(payload.Data!.Token));
+        var token = new JwtSecurityToken(
+            issuer: ApiFactory.JwtIssuer,
+            audience: ApiFactory.JwtAudience,
+            claims: claims,
+            expires: expires,
+            signingCredentials: credentials);
 
-        return payload.Data!.Token;
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
-    /// <summary>
-    /// Represents the response containing an authentication token.
-    /// </summary>
-    /// <param name="Token">The JWT token.</param>
-    /// <param name="ExpiresAtUtc">The token expiration date and time in UTC.</param>
-    protected sealed record AuthTokenResponse(string Token, DateTime ExpiresAtUtc);
 
     /// <summary>
     /// Represents a paginated response.

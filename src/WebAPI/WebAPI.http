@@ -82,14 +82,3 @@ Content-Type: application/json
 DELETE {{WebAPI_HostAddress}}/api/TodoLists/{{id}}
 
 ###
-
-POST {{WebAPI_HostAddress}}/api/auth/login
-Content-Type: application/json
-
-{
-  "username": "admin",
-  "email": "admin@localhost.com",
-  "roles": [ "Admin" ]
-}
-
-###

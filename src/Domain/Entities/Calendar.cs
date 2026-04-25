@@ -50,6 +50,11 @@ public class Calendar : BaseAuditableEntity
     public bool IsVisible { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the display color for this calendar (hex value, e.g. #3b82f6).
+    /// </summary>
+    public string? Color { get; set; }
+
+    /// <summary>
     /// Gets or sets the ID of the user who owns the calendar.
     /// </summary>
     public Guid UserId { get; set; }

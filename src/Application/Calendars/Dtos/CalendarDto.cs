@@ -25,6 +25,7 @@ public class CalendarDto
         UserId = source.UserId;
         IsPublic = source.IsPublic;
         IsVisible = source.IsVisible;
+        Color = source.Color;
     }
 
     /// <summary>
@@ -76,4 +77,9 @@ public class CalendarDto
     /// Gets a value indicating whether this calendar is visible to its owner.
     /// </summary>
     public bool IsVisible { get; init; }
+
+    /// <summary>
+    /// Gets the display color for this calendar (hex value, e.g. #3b82f6).
+    /// </summary>
+    public string? Color { get; init; }
 }

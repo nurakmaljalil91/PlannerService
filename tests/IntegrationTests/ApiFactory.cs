@@ -11,6 +11,26 @@ namespace IntegrationTests;
 public class ApiFactory : WebApplicationFactory<Program>
 {
     /// <summary>
+    /// The JWT issuer used by integration tests.
+    /// </summary>
+    public const string JwtIssuer = "IntegrationTests";
+
+    /// <summary>
+    /// The JWT audience used by integration tests.
+    /// </summary>
+    public const string JwtAudience = "IntegrationTests";
+
+    /// <summary>
+    /// The JWT signing key used by integration tests.
+    /// </summary>
+    public const string JwtKey = "integration-tests-super-secret-key-1234567890";
+
+    /// <summary>
+    /// The JWT expiry in minutes used by integration tests.
+    /// </summary>
+    public const int JwtExpiryMinutes = 60;
+
+    /// <summary>
     /// Configures the web host for integration tests.
     /// </summary>
     /// <param name="builder">The web host builder.</param>
@@ -23,10 +43,10 @@ public class ApiFactory : WebApplicationFactory<Program>
             var settings = new Dictionary<string, string?>
             {
                 ["UseInMemoryDatabase"] = "true",
-                ["Jwt:Issuer"] = "IntegrationTests",
-                ["Jwt:Audience"] = "IntegrationTests",
-                ["Jwt:Key"] = "integration-tests-super-secret-key-1234567890",
-                ["Jwt:ExpiryMinutes"] = "60",
+                ["Jwt:Issuer"] = JwtIssuer,
+                ["Jwt:Audience"] = JwtAudience,
+                ["Jwt:Key"] = JwtKey,
+                ["Jwt:ExpiryMinutes"] = JwtExpiryMinutes.ToString(),
                 ["BuildVersion"] = "integration-test-build"
             };
 

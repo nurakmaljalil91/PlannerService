@@ -37,6 +37,11 @@ public class UpdateCalendarCommand : IRequest<BaseResponse<CalendarDto>>
     /// Gets or sets a value indicating whether this is the primary calendar.
     /// </summary>
     public bool? IsPrimary { get; set; }
+
+    /// <summary>
+    /// Gets or sets the display color for this calendar (hex value, e.g. #3b82f6).
+    /// </summary>
+    public string? Color { get; set; }
 }
 
 /// <summary>
@@ -81,6 +86,7 @@ public class UpdateCalendarCommandHandler : IRequestHandler<UpdateCalendarComman
         entity.Title = request.Title ?? entity.Title;
         entity.Description = request.Description ?? entity.Description;
         entity.TimeZone = request.TimeZone ?? entity.TimeZone;
+        entity.Color = request.Color ?? entity.Color;
 
         if (request.IsPrimary.HasValue)
         {
@@ -117,5 +123,10 @@ public class UpdateCalendarCommandValidator : AbstractValidator<UpdateCalendarCo
         RuleFor(x => x.TimeZone)
             .MaximumLength(100).WithMessage("TimeZone must not exceed 100 characters.")
             .When(x => x.TimeZone != null);
+
+        RuleFor(x => x.Color)
+            .MaximumLength(20).WithMessage("Color must not exceed 20 characters.")
+            .Matches(@"^#[0-9a-fA-F]{6}$").WithMessage("Color must be a valid hex color (e.g. #3b82f6).")
+            .When(x => x.Color != null);
     }
 }
