@@ -1,5 +1,6 @@
 #nullable enable
 using Application.Calendars.Dtos;
+using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Domain.Common;
 using Domain.Entities;
@@ -41,16 +42,19 @@ public class CreateCalendarCommandHandler : IRequestHandler<CreateCalendarComman
 {
     private readonly IApplicationDbContext _context;
     private readonly IUser _user;
+    private readonly IUserServiceClient _userServiceClient;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateCalendarCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
     /// <param name="user">The current authenticated user.</param>
-    public CreateCalendarCommandHandler(IApplicationDbContext context, IUser user)
+    /// <param name="userServiceClient">The UserService client used to validate the owning user.</param>
+    public CreateCalendarCommandHandler(IApplicationDbContext context, IUser user, IUserServiceClient userServiceClient)
     {
         _context = context;
         _user = user;
+        _userServiceClient = userServiceClient;
     }
 
     /// <summary>
@@ -61,13 +65,20 @@ public class CreateCalendarCommandHandler : IRequestHandler<CreateCalendarComman
     /// <returns>A response containing the created calendar DTO.</returns>
     public async Task<BaseResponse<CalendarDto>> Handle(CreateCalendarCommand request, CancellationToken cancellationToken)
     {
+        var userId = _user.UserId ?? throw new UnauthorizedAccessException();
+
+        if (!await _userServiceClient.UserExistsAsync(userId, cancellationToken))
+        {
+            throw new NotFoundException("User", userId);
+        }
+
         var entity = new Calendar
         {
             Title = request.Title,
             Description = request.Description,
             TimeZone = request.TimeZone,
             IsPrimary = request.IsPrimary,
-            UserId = _user.UserId ?? Guid.Empty
+            UserId = userId
         };
 
         _context.Calendars.Add(entity);

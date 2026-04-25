@@ -19,16 +19,6 @@ public sealed class TestApplicationDbContext : DbContext, IApplicationDbContext
     }
 
     /// <summary>
-    /// Gets the <see cref="DbSet{TodoList}"/> representing the collection of task lists.
-    /// </summary>
-    public DbSet<TodoList> TodoLists => Set<TodoList>();
-
-    /// <summary>
-    /// Gets the <see cref="DbSet{TodoItem}"/> representing the collection of task items.
-    /// </summary>
-    public DbSet<TodoItem> TodoItems => Set<TodoItem>();
-
-    /// <summary>
     /// Gets the <see cref="DbSet{Calendar}"/> representing the collection of calendars.
     /// </summary>
     public DbSet<Calendar> Calendars => Set<Calendar>();
@@ -59,22 +49,6 @@ public sealed class TestApplicationDbContext : DbContext, IApplicationDbContext
     /// <param name="modelBuilder">The builder being used to construct the model for this context.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TodoList>(builder =>
-        {
-            builder.HasKey(x => x.Id);
-            builder.OwnsOne(x => x.Colour);
-            builder.Navigation(x => x.Items)
-                .UsePropertyAccessMode(PropertyAccessMode.Field);
-        });
-
-        modelBuilder.Entity<TodoItem>(builder =>
-        {
-            builder.HasKey(x => x.Id);
-            builder.HasOne(x => x.List)
-                .WithMany(x => x.Items)
-                .HasForeignKey(x => x.ListId);
-        });
-
         modelBuilder.Entity<Calendar>(builder =>
         {
             builder.HasKey(x => x.Id);

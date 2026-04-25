@@ -27,6 +27,7 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" Version="10.0.0" />
+    <PackageVersion Include="Refit.HttpClientFactory" Version="10.1.6" />
     <!-- Packages for Infrastructure -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1" />
     <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />

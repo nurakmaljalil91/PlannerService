@@ -24,12 +24,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     }
 
     /// <inheritdoc />
-    public DbSet<TodoList> TodoLists => Set<TodoList>();
-
-    /// <inheritdoc />
-    public DbSet<TodoItem> TodoItems => Set<TodoItem>();
-
-    /// <inheritdoc />
     public DbSet<Calendar> Calendars => Set<Calendar>();
 
     /// <inheritdoc />

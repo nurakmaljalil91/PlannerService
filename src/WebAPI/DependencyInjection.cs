@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
 
         services.AddScoped<IUser, CurrentUser>();
+        services.AddScoped<ICurrentBearerTokenProvider, CurrentBearerTokenProvider>();
 
         // Allow all origin since it will be web service
         services.AddCors(options =>

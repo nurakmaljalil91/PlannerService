@@ -20,7 +20,7 @@ public class CreateCalendarCommandHandlerTests
     public async Task Handle_ValidCommand_ReturnsSuccessWithCalendarDto()
     {
         await using var context = TestDbContextFactory.Create();
-        var handler = new CreateCalendarCommandHandler(context, MakeUser(Guid.NewGuid()));
+        var handler = new CreateCalendarCommandHandler(context, MakeUser(Guid.NewGuid()), new StubUserServiceClient());
 
         var command = new CreateCalendarCommand
         {
@@ -48,7 +48,7 @@ public class CreateCalendarCommandHandlerTests
     {
         await using var context = TestDbContextFactory.Create();
         var userId = Guid.NewGuid();
-        var handler = new CreateCalendarCommandHandler(context, MakeUser(userId));
+        var handler = new CreateCalendarCommandHandler(context, MakeUser(userId), new StubUserServiceClient());
 
         var command = new CreateCalendarCommand { Title = "Personal Calendar" };
 
@@ -72,5 +72,11 @@ public class CreateCalendarCommandHandlerTests
         public string? Username => _userId.ToString();
         public Guid? UserId => _userId;
         public List<string> GetRoles() => [];
+    }
+
+    private sealed class StubUserServiceClient : IUserServiceClient
+    {
+        public Task<bool> UserExistsAsync(Guid userId, CancellationToken cancellationToken)
+            => Task.FromResult(true);
     }
 }

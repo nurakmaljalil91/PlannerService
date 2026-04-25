@@ -40,7 +40,7 @@ public class DeleteCalendarCommandHandlerTests
         var userId = Guid.NewGuid();
         var user = MakeUser(userId);
 
-        var createHandler = new CreateCalendarCommandHandler(context, user);
+        var createHandler = new CreateCalendarCommandHandler(context, user, new StubUserServiceClient());
         var created = await createHandler.Handle(new CreateCalendarCommand { Title = "To Delete" }, CancellationToken.None);
 
         var deleteHandler = new DeleteCalendarCommandHandler(context, user);
@@ -61,5 +61,11 @@ public class DeleteCalendarCommandHandlerTests
         public string? Username => _userId.ToString();
         public Guid? UserId => _userId;
         public List<string> GetRoles() => [];
+    }
+
+    private sealed class StubUserServiceClient : IUserServiceClient
+    {
+        public Task<bool> UserExistsAsync(Guid userId, CancellationToken cancellationToken)
+            => Task.FromResult(true);
     }
 }

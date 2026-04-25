@@ -9,16 +9,6 @@ namespace Application.Common.Interfaces;
 public interface IApplicationDbContext
 {
     /// <summary>
-    /// Gets the set of <see cref="TodoList"/> entities.
-    /// </summary>
-    DbSet<TodoList> TodoLists { get; }
-
-    /// <summary>
-    /// Gets the set of <see cref="TodoItem"/> entities.
-    /// </summary>
-    DbSet<TodoItem> TodoItems { get; }
-
-    /// <summary>
     /// Gets the set of <see cref="Calendar"/> entities.
     /// </summary>
     DbSet<Calendar> Calendars { get; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using Application.Common.Interfaces;
+using Infrastructure.Clients.UserService;
 using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Services;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Refit;
 
 namespace Infrastructure;
 
@@ -81,6 +83,14 @@ public static class DependencyInjection
 
         services.AddTransient<IDateTime, DateTimeService>();
         services.AddTransient<IClockService, ClockService>();
+        services.AddScoped<IUserServiceClient, UserServiceClient>();
+
+        var userServiceBaseUrl = configuration["Services:UserService:BaseUrl"];
+        Guard.Against.NullOrEmpty(userServiceBaseUrl, message: "Services:UserService:BaseUrl is not configured.");
+
+        services
+            .AddRefitClient<IUserServiceApi>()
+            .ConfigureHttpClient(client => client.BaseAddress = new Uri(userServiceBaseUrl!));
 
         return services;
     }

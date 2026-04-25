@@ -24,9 +24,11 @@ public class DependencyInjectionTests
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddScoped<IUser>(_ => new TestUser("tester"));
+        services.AddScoped<ICurrentBearerTokenProvider>(_ => new TestBearerTokenProvider());
         var configuration = BuildConfiguration(new Dictionary<string, string?>
         {
-            ["UseInMemoryDatabase"] = "true"
+            ["UseInMemoryDatabase"] = "true",
+            ["Services:UserService:BaseUrl"] = "http://localhost:5000"
         });
 
         services.AddInfrastructureServices(configuration);
@@ -42,6 +44,7 @@ public class DependencyInjectionTests
         Assert.Same(dbContext, appDbContext);
         Assert.NotNull(scoped.GetRequiredService<IDateTime>());
         Assert.NotNull(scoped.GetRequiredService<IClockService>());
+        Assert.NotNull(scoped.GetRequiredService<IUserServiceClient>());
         Assert.NotNull(scoped.GetRequiredService<ApplicationDbContextInitialiser>());
 
         var interceptors = scoped.GetServices<ISaveChangesInterceptor>();
@@ -78,5 +81,10 @@ public class DependencyInjectionTests
         public Guid? UserId => null;
 
         public List<string> GetRoles() => new();
+    }
+
+    private sealed class TestBearerTokenProvider : ICurrentBearerTokenProvider
+    {
+        public string? AuthorizationHeader => "Bearer test-token";
     }
 }
