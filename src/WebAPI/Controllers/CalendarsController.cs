@@ -142,12 +142,17 @@ public class CalendarsController : ControllerBase
     /// <summary>
     /// Updates an existing calendar.
     /// </summary>
+    /// <param name="id">The identifier of the calendar to update.</param>
     /// <param name="command">The command containing the updated calendar details.</param>
     /// <returns>The updated <see cref="CalendarDto"/>.</returns>
-    [HttpPatch]
+    [HttpPatch("{id:long}")]
     public async Task<ActionResult<BaseResponse<CalendarDto>>> UpdateCalendar(
+        long id,
         [FromBody] UpdateCalendarCommand command)
-        => Ok(await _mediator.Send(command));
+    {
+        command.Id = id;
+        return Ok(await _mediator.Send(command));
+    }
 
     /// <summary>
     /// Deletes a calendar by its identifier.
