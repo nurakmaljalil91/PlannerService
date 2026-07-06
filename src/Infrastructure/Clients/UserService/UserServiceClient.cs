@@ -35,7 +35,7 @@ internal sealed class UserServiceClient : IUserServiceClient
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new InvalidOperationException($"UserService returned {(int)response.StatusCode} while checking user {userId}.");
+            throw new InvalidOperationException($"UserService returned {(int)(response.StatusCode ?? HttpStatusCode.InternalServerError)} while checking user {userId}.");
         }
 
         return response.Content?.Success == true && response.Content.Data?.Id == userId;
