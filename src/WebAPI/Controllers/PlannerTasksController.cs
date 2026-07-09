@@ -57,12 +57,17 @@ public class PlannerTasksController : ControllerBase
     /// <summary>
     /// Updates an existing planner task.
     /// </summary>
+    /// <param name="id">The identifier of the planner task to update.</param>
     /// <param name="command">The command containing the updated planner task details.</param>
     /// <returns>The updated <see cref="PlannerTaskDto"/>.</returns>
-    [HttpPatch]
+    [HttpPatch("{id:long}")]
     public async Task<ActionResult<BaseResponse<PlannerTaskDto>>> UpdatePlannerTask(
+        long id,
         [FromBody] UpdatePlannerTaskCommand command)
-        => Ok(await _mediator.Send(command));
+    {
+        command.Id = id;
+        return Ok(await _mediator.Send(command));
+    }
 
     /// <summary>
     /// Marks a planner task as completed or incomplete.

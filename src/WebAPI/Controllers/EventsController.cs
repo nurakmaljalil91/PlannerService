@@ -66,12 +66,17 @@ public class EventsController : ControllerBase
     /// <summary>
     /// Updates an existing calendar event.
     /// </summary>
+    /// <param name="id">The identifier of the event to update.</param>
     /// <param name="command">The command containing the updated event details.</param>
     /// <returns>The updated <see cref="EventDto"/>.</returns>
-    [HttpPatch]
+    [HttpPatch("{id:long}")]
     public async Task<ActionResult<BaseResponse<EventDto>>> UpdateEvent(
+        long id,
         [FromBody] UpdateEventCommand command)
-        => Ok(await _mediator.Send(command));
+    {
+        command.Id = id;
+        return Ok(await _mediator.Send(command));
+    }
 
     /// <summary>
     /// Deletes a calendar event by its identifier.
