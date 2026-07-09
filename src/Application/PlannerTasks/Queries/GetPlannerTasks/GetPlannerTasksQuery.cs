@@ -1,3 +1,4 @@
+#nullable enable
 using Application.Common.Extensions;
 using Application.Common.Interfaces;
 using Application.Common.Models;
@@ -17,6 +18,16 @@ public class GetPlannerTasksQuery : PaginatedRequest, IRequest<BaseResponse<Pagi
     /// Gets or sets an optional calendar identifier to filter tasks by.
     /// </summary>
     public long? CalendarId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the optional inclusive start of the visible range to filter tasks by.
+    /// </summary>
+    public DateTime? RangeStart { get; set; }
+
+    /// <summary>
+    /// Gets or sets the optional exclusive end of the visible range to filter tasks by.
+    /// </summary>
+    public DateTime? RangeEnd { get; set; }
 }
 
 /// <summary>
@@ -50,6 +61,16 @@ public class GetPlannerTasksQueryHandler : IRequestHandler<GetPlannerTasksQuery,
         if (request.CalendarId.HasValue)
         {
             query = query.Where(t => t.CalendarId == request.CalendarId.Value);
+        }
+
+        if (request.RangeStart.HasValue && request.RangeEnd.HasValue)
+        {
+            var rangeStart = request.RangeStart.Value;
+            var rangeEnd = request.RangeEnd.Value;
+
+            query = query.Where(t =>
+                (t.DueDate.HasValue && t.DueDate.Value >= rangeStart && t.DueDate.Value < rangeEnd) ||
+                (t.Reminder.HasValue && t.Reminder.Value >= rangeStart && t.Reminder.Value < rangeEnd));
         }
 
         query = query
