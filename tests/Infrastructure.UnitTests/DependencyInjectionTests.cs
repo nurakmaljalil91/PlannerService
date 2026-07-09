@@ -7,6 +7,8 @@ using Infrastructure.Data.Interceptors;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 
 namespace Infrastructure.UnitTests;
 
@@ -25,6 +27,7 @@ public class DependencyInjectionTests
         services.AddLogging();
         services.AddScoped<IUser>(_ => new TestUser("tester"));
         services.AddScoped<ICurrentBearerTokenProvider>(_ => new TestBearerTokenProvider());
+        services.AddSingleton<IHostEnvironment>(new TestHostEnvironment());
         var configuration = BuildConfiguration(new Dictionary<string, string?>
         {
             ["UseInMemoryDatabase"] = "true",
@@ -86,5 +89,13 @@ public class DependencyInjectionTests
     private sealed class TestBearerTokenProvider : ICurrentBearerTokenProvider
     {
         public string? AuthorizationHeader => "Bearer test-token";
+    }
+
+    private sealed class TestHostEnvironment : IHostEnvironment
+    {
+        public string EnvironmentName { get; set; } = Environments.Development;
+        public string ApplicationName { get; set; } = "Infrastructure.UnitTests";
+        public string ContentRootPath { get; set; } = AppContext.BaseDirectory;
+        public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
     }
 }
