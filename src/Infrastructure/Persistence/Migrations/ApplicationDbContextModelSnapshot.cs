@@ -32,6 +32,11 @@ namespace Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("Color")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("color");
+
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text")
                         .HasColumnName("created_by");
@@ -346,99 +351,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("reminders", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.TodoItem", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text")
-                        .HasColumnName("created_by");
-
-                    b.Property<Instant>("CreatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_date");
-
-                    b.Property<long>("ListId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("list_id");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("text")
-                        .HasColumnName("note");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("integer")
-                        .HasColumnName("priority");
-
-                    b.Property<DateTime?>("Reminder")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("reminder");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("title");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text")
-                        .HasColumnName("updated_by");
-
-                    b.Property<Instant>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_date");
-
-                    b.HasKey("Id")
-                        .HasName("pk_todo_items");
-
-                    b.HasIndex("ListId")
-                        .HasDatabaseName("ix_todo_items_list_id");
-
-                    b.ToTable("todo_items", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.TodoList", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text")
-                        .HasColumnName("created_by");
-
-                    b.Property<Instant>("CreatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_date");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("title");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("text")
-                        .HasColumnName("updated_by");
-
-                    b.Property<Instant>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_date");
-
-                    b.HasKey("Id")
-                        .HasName("pk_todo_lists");
-
-                    b.ToTable("todo_lists", (string)null);
-                });
-
             modelBuilder.Entity("Domain.Entities.CalendarSubscription", b =>
                 {
                     b.HasOne("Domain.Entities.Calendar", "Calendar")
@@ -487,43 +399,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Event");
                 });
 
-            modelBuilder.Entity("Domain.Entities.TodoItem", b =>
-                {
-                    b.HasOne("Domain.Entities.TodoList", "List")
-                        .WithMany("Items")
-                        .HasForeignKey("ListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_todo_items_todo_lists_list_id");
-
-                    b.Navigation("List");
-                });
-
-            modelBuilder.Entity("Domain.Entities.TodoList", b =>
-                {
-                    b.OwnsOne("Domain.ValueObjects.Colour", "Colour", b1 =>
-                        {
-                            b1.Property<long>("TodoListId")
-                                .HasColumnType("bigint")
-                                .HasColumnName("id");
-
-                            b1.Property<string>("Code")
-                                .HasColumnType("text")
-                                .HasColumnName("colour_code");
-
-                            b1.HasKey("TodoListId");
-
-                            b1.ToTable("todo_lists");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TodoListId")
-                                .HasConstraintName("fk_todo_lists_todo_lists_id");
-                        });
-
-                    b.Navigation("Colour")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Domain.Entities.Calendar", b =>
                 {
                     b.Navigation("Events");
@@ -534,11 +409,6 @@ namespace Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Event", b =>
                 {
                     b.Navigation("Reminders");
-                });
-
-            modelBuilder.Entity("Domain.Entities.TodoList", b =>
-                {
-                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }
