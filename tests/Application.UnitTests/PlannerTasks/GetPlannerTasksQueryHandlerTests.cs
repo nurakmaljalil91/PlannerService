@@ -10,6 +10,8 @@ namespace Application.UnitTests.PlannerTasks;
 /// </summary>
 public class GetPlannerTasksQueryHandlerTests
 {
+    private static readonly Guid Owner = Guid.NewGuid();
+
     /// <summary>
     /// Verifies that tasks are returned when their due date or reminder is inside the requested range.
     /// </summary>
@@ -28,7 +30,7 @@ public class GetPlannerTasksQueryHandlerTests
             CreateTask("Undated", calendar.Id));
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new GetPlannerTasksQueryHandler(context);
+        var handler = new GetPlannerTasksQueryHandler(context, new TestUser(Owner));
 
         var result = await handler.Handle(
             new GetPlannerTasksQuery { RangeStart = rangeStart, RangeEnd = rangeEnd, Total = 10 },
@@ -60,7 +62,7 @@ public class GetPlannerTasksQueryHandlerTests
             CreateTask("Other Calendar", excludedCalendar.Id, dueDate: rangeStart.AddDays(1)));
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new GetPlannerTasksQueryHandler(context);
+        var handler = new GetPlannerTasksQueryHandler(context, new TestUser(Owner));
 
         var result = await handler.Handle(
             new GetPlannerTasksQuery
@@ -92,7 +94,7 @@ public class GetPlannerTasksQueryHandlerTests
             CreateTask("Second", calendar.Id));
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new GetPlannerTasksQueryHandler(context);
+        var handler = new GetPlannerTasksQueryHandler(context, new TestUser(Owner));
 
         var result = await handler.Handle(new GetPlannerTasksQuery { Page = 1, Total = 1 }, CancellationToken.None);
 
@@ -104,7 +106,7 @@ public class GetPlannerTasksQueryHandlerTests
 
     private static async Task<Calendar> AddCalendarAsync(TestApplicationDbContext context)
     {
-        var calendar = new Calendar { Title = "Calendar", UserId = Guid.NewGuid() };
+        var calendar = new Calendar { Title = "Calendar", UserId = Owner };
         context.Calendars.Add(calendar);
         await context.SaveChangesAsync(CancellationToken.None);
         return calendar;

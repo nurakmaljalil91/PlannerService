@@ -2,6 +2,7 @@
 using System;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.PlannerTasks.Dtos;
 using Domain.Common;
 using Domain.Enums;
@@ -52,14 +53,17 @@ public class UpdatePlannerTaskCommand : IRequest<BaseResponse<PlannerTaskDto>>
 public class UpdatePlannerTaskCommandHandler : IRequestHandler<UpdatePlannerTaskCommand, BaseResponse<PlannerTaskDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdatePlannerTaskCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public UpdatePlannerTaskCommandHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public UpdatePlannerTaskCommandHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -76,6 +80,12 @@ public class UpdatePlannerTaskCommandHandler : IRequestHandler<UpdatePlannerTask
         {
             throw new NotFoundException($"Planner task with id {request.Id} was not found.");
         }
+
+        await _context.EnsureCalendarWritableAsync(
+            entity.CalendarId,
+            _user.UserId,
+            $"Planner task with id {request.Id} was not found.",
+            cancellationToken);
 
         entity.Title = request.Title ?? entity.Title;
         entity.Note = request.Note ?? entity.Note;

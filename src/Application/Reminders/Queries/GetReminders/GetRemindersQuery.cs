@@ -1,5 +1,6 @@
 using Application.Common.Extensions;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.Common.Models;
 using Application.Reminders.Dtos;
 using Domain.Common;
@@ -25,14 +26,17 @@ public class GetRemindersQuery : PaginatedRequest, IRequest<BaseResponse<Paginat
 public class GetRemindersQueryHandler : IRequestHandler<GetRemindersQuery, BaseResponse<PaginatedEnumerable<ReminderDto>>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetRemindersQueryHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public GetRemindersQueryHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public GetRemindersQueryHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -45,7 +49,13 @@ public class GetRemindersQueryHandler : IRequestHandler<GetRemindersQuery, BaseR
         GetRemindersQuery request,
         CancellationToken cancellationToken)
     {
-        var query = _context.Reminders.AsQueryable();
+        var calendarIds = request.EventId.HasValue
+            ? _context.Calendars.ReadableBy(_user.UserId).Select(c => c.Id)
+            : _context.ListedCalendarIds(_user.UserId, calendarId: null);
+        var eventIds = _context.Events
+            .Where(e => calendarIds.Contains(e.CalendarId))
+            .Select(e => e.Id);
+        var query = _context.Reminders.Where(r => eventIds.Contains(r.EventId));
 
         if (request.EventId.HasValue)
         {

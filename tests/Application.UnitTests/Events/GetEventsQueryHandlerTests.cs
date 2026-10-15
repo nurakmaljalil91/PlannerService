@@ -10,6 +10,8 @@ namespace Application.UnitTests.Events;
 /// </summary>
 public class GetEventsQueryHandlerTests
 {
+    private static readonly Guid Owner = Guid.NewGuid();
+
     /// <summary>
     /// Verifies that events are returned when their interval overlaps the requested range.
     /// </summary>
@@ -28,7 +30,7 @@ public class GetEventsQueryHandlerTests
             CreateEvent("At Range End", calendar.Id, rangeEnd, rangeEnd.AddHours(1)));
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new GetEventsQueryHandler(context);
+        var handler = new GetEventsQueryHandler(context, new TestUser(Owner));
 
         var result = await handler.Handle(
             new GetEventsQuery { RangeStart = rangeStart, RangeEnd = rangeEnd, Total = 10 },
@@ -60,7 +62,7 @@ public class GetEventsQueryHandlerTests
             CreateEvent("Other Calendar", excludedCalendar.Id, rangeStart.AddDays(1), rangeStart.AddDays(1).AddHours(1)));
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new GetEventsQueryHandler(context);
+        var handler = new GetEventsQueryHandler(context, new TestUser(Owner));
 
         var result = await handler.Handle(
             new GetEventsQuery
@@ -106,7 +108,7 @@ public class GetEventsQueryHandlerTests
                 recurrenceRule: "FREQ=WEEKLY;BYDAY=MO;UNTIL=20260601T000000Z"));
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new GetEventsQueryHandler(context);
+        var handler = new GetEventsQueryHandler(context, new TestUser(Owner));
 
         var result = await handler.Handle(
             new GetEventsQuery { RangeStart = rangeStart, RangeEnd = rangeEnd, Total = 10 },
@@ -132,7 +134,7 @@ public class GetEventsQueryHandlerTests
             CreateEvent("Second", calendar.Id, new DateTime(2026, 2, 1, 9, 0, 0, DateTimeKind.Utc), new DateTime(2026, 2, 1, 10, 0, 0, DateTimeKind.Utc)));
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new GetEventsQueryHandler(context);
+        var handler = new GetEventsQueryHandler(context, new TestUser(Owner));
 
         var result = await handler.Handle(new GetEventsQuery { Page = 1, Total = 1 }, CancellationToken.None);
 
@@ -144,7 +146,7 @@ public class GetEventsQueryHandlerTests
 
     private static async Task<Calendar> AddCalendarAsync(TestApplicationDbContext context)
     {
-        var calendar = new Calendar { Title = "Calendar", UserId = Guid.NewGuid() };
+        var calendar = new Calendar { Title = "Calendar", UserId = Owner };
         context.Calendars.Add(calendar);
         await context.SaveChangesAsync(CancellationToken.None);
         return calendar;

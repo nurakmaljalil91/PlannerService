@@ -10,6 +10,8 @@ namespace Application.UnitTests.PlannerTasks;
 /// </summary>
 public class CreatePlannerTaskCommandHandlerTests
 {
+    private static readonly Guid Owner = Guid.NewGuid();
+
     /// <summary>
     /// Verifies that <see cref="CreatePlannerTaskCommandHandler.Handle"/> creates a planner task and
     /// returns a successful response containing the created task DTO.
@@ -19,11 +21,11 @@ public class CreatePlannerTaskCommandHandlerTests
     {
         await using var context = TestDbContextFactory.Create();
 
-        var calendar = new Calendar { Title = "Test Calendar", UserId = Guid.NewGuid() };
+        var calendar = new Calendar { Title = "Test Calendar", UserId = Owner };
         context.Calendars.Add(calendar);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new CreatePlannerTaskCommandHandler(context);
+        var handler = new CreatePlannerTaskCommandHandler(context, new TestUser(Owner));
         var dueDate = new DateTime(2026, 6, 15, 0, 0, 0, DateTimeKind.Utc);
 
         var command = new CreatePlannerTaskCommand

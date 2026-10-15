@@ -11,6 +11,8 @@ namespace Application.UnitTests.PlannerTasks;
 /// </summary>
 public class DeletePlannerTaskCommandHandlerTests
 {
+    private static readonly Guid Owner = Guid.NewGuid();
+
     /// <summary>
     /// Verifies that <see cref="DeletePlannerTaskCommandHandler.Handle"/> throws a <see cref="NotFoundException"/>
     /// when attempting to delete a planner task that does not exist.
@@ -19,7 +21,7 @@ public class DeletePlannerTaskCommandHandlerTests
     public async Task Handle_WhenTaskMissing_ThrowsNotFoundException()
     {
         await using var context = TestDbContextFactory.Create();
-        var handler = new DeletePlannerTaskCommandHandler(context);
+        var handler = new DeletePlannerTaskCommandHandler(context, new TestUser(Owner));
 
         var command = new DeletePlannerTaskCommand { Id = 999 };
 
@@ -35,7 +37,7 @@ public class DeletePlannerTaskCommandHandlerTests
     {
         await using var context = TestDbContextFactory.Create();
 
-        var calendar = new Calendar { Title = "Cal", UserId = Guid.NewGuid() };
+        var calendar = new Calendar { Title = "Cal", UserId = Owner };
         context.Calendars.Add(calendar);
         await context.SaveChangesAsync(CancellationToken.None);
 
@@ -48,7 +50,7 @@ public class DeletePlannerTaskCommandHandlerTests
         context.PlannerTasks.Add(task);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new DeletePlannerTaskCommandHandler(context);
+        var handler = new DeletePlannerTaskCommandHandler(context, new TestUser(Owner));
         var result = await handler.Handle(new DeletePlannerTaskCommand { Id = task.Id }, CancellationToken.None);
 
         Assert.True(result.Success);

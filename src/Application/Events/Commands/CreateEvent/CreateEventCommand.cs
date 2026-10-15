@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.Events.Dtos;
 using Domain.Common;
 using Domain.Entities;
@@ -66,14 +67,17 @@ public class CreateEventCommand : IRequest<BaseResponse<EventDto>>
 public class CreateEventCommandHandler : IRequestHandler<CreateEventCommand, BaseResponse<EventDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateEventCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public CreateEventCommandHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public CreateEventCommandHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -84,6 +88,12 @@ public class CreateEventCommandHandler : IRequestHandler<CreateEventCommand, Bas
     /// <returns>A response containing the created event DTO.</returns>
     public async Task<BaseResponse<EventDto>> Handle(CreateEventCommand request, CancellationToken cancellationToken)
     {
+        await _context.EnsureCalendarWritableAsync(
+            request.CalendarId,
+            _user.UserId,
+            $"Calendar with id {request.CalendarId} was not found.",
+            cancellationToken);
+
         var entity = new Event
         {
             Title = request.Title,

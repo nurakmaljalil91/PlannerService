@@ -1,5 +1,6 @@
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.Reminders.Dtos;
 using Domain.Common;
 using Mediator;
@@ -23,14 +24,17 @@ public class GetReminderByIdQuery : IRequest<BaseResponse<ReminderDto>>
 public class GetReminderByIdQueryHandler : IRequestHandler<GetReminderByIdQuery, BaseResponse<ReminderDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetReminderByIdQueryHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public GetReminderByIdQueryHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public GetReminderByIdQueryHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -47,6 +51,12 @@ public class GetReminderByIdQueryHandler : IRequestHandler<GetReminderByIdQuery,
         {
             throw new NotFoundException($"Reminder with id {request.Id} was not found.");
         }
+
+        await _context.EnsureEventReadableAsync(
+            entity.EventId,
+            _user.UserId,
+            $"Reminder with id {request.Id} was not found.",
+            cancellationToken);
 
         return BaseResponse<ReminderDto>.Ok(new ReminderDto(entity));
     }

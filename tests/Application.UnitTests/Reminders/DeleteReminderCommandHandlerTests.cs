@@ -10,6 +10,8 @@ namespace Application.UnitTests.Reminders;
 /// </summary>
 public class DeleteReminderCommandHandlerTests
 {
+    private static readonly Guid Owner = Guid.NewGuid();
+
     /// <summary>
     /// Verifies that <see cref="DeleteReminderCommandHandler.Handle"/> throws a <see cref="NotFoundException"/>
     /// when attempting to delete a reminder that does not exist.
@@ -18,7 +20,7 @@ public class DeleteReminderCommandHandlerTests
     public async Task Handle_WhenReminderMissing_ThrowsNotFoundException()
     {
         await using var context = TestDbContextFactory.Create();
-        var handler = new DeleteReminderCommandHandler(context);
+        var handler = new DeleteReminderCommandHandler(context, new TestUser(Owner));
 
         var command = new DeleteReminderCommand { Id = 999 };
 
@@ -34,7 +36,7 @@ public class DeleteReminderCommandHandlerTests
     {
         await using var context = TestDbContextFactory.Create();
 
-        var calendar = new Calendar { Title = "Cal", UserId = Guid.NewGuid() };
+        var calendar = new Calendar { Title = "Cal", UserId = Owner };
         context.Calendars.Add(calendar);
         await context.SaveChangesAsync(CancellationToken.None);
 
@@ -57,7 +59,7 @@ public class DeleteReminderCommandHandlerTests
         context.Reminders.Add(reminder);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new DeleteReminderCommandHandler(context);
+        var handler = new DeleteReminderCommandHandler(context, new TestUser(Owner));
         var result = await handler.Handle(new DeleteReminderCommand { Id = reminder.Id }, CancellationToken.None);
 
         Assert.True(result.Success);

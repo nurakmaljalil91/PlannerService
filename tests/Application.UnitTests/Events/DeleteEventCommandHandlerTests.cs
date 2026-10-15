@@ -10,6 +10,8 @@ namespace Application.UnitTests.Events;
 /// </summary>
 public class DeleteEventCommandHandlerTests
 {
+    private static readonly Guid Owner = Guid.NewGuid();
+
     /// <summary>
     /// Verifies that <see cref="DeleteEventCommandHandler.Handle"/> throws a <see cref="NotFoundException"/>
     /// when attempting to delete an event that does not exist.
@@ -18,7 +20,7 @@ public class DeleteEventCommandHandlerTests
     public async Task Handle_WhenEventMissing_ThrowsNotFoundException()
     {
         await using var context = TestDbContextFactory.Create();
-        var handler = new DeleteEventCommandHandler(context);
+        var handler = new DeleteEventCommandHandler(context, new TestUser(Owner));
 
         var command = new DeleteEventCommand { Id = 999 };
 
@@ -34,7 +36,7 @@ public class DeleteEventCommandHandlerTests
     {
         await using var context = TestDbContextFactory.Create();
 
-        var calendar = new Calendar { Title = "Cal", UserId = Guid.NewGuid() };
+        var calendar = new Calendar { Title = "Cal", UserId = Owner };
         context.Calendars.Add(calendar);
         await context.SaveChangesAsync(CancellationToken.None);
 
@@ -48,7 +50,7 @@ public class DeleteEventCommandHandlerTests
         context.Events.Add(evt);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new DeleteEventCommandHandler(context);
+        var handler = new DeleteEventCommandHandler(context, new TestUser(Owner));
         var result = await handler.Handle(new DeleteEventCommand { Id = evt.Id }, CancellationToken.None);
 
         Assert.True(result.Success);

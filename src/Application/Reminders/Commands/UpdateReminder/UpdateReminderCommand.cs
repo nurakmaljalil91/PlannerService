@@ -2,6 +2,7 @@
 using System;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.Reminders.Dtos;
 using Domain.Common;
 using FluentValidation;
@@ -41,14 +42,17 @@ public class UpdateReminderCommand : IRequest<BaseResponse<ReminderDto>>
 public class UpdateReminderCommandHandler : IRequestHandler<UpdateReminderCommand, BaseResponse<ReminderDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateReminderCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public UpdateReminderCommandHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public UpdateReminderCommandHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -65,6 +69,12 @@ public class UpdateReminderCommandHandler : IRequestHandler<UpdateReminderComman
         {
             throw new NotFoundException($"Reminder with id {request.Id} was not found.");
         }
+
+        await _context.EnsureEventWritableAsync(
+            entity.EventId,
+            _user.UserId,
+            $"Reminder with id {request.Id} was not found.",
+            cancellationToken);
 
         entity.Title = request.Title ?? entity.Title;
 

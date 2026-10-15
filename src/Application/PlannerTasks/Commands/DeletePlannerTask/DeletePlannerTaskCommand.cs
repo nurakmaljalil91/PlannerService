@@ -1,5 +1,6 @@
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Domain.Common;
 using Mediator;
 
@@ -22,14 +23,17 @@ public class DeletePlannerTaskCommand : IRequest<BaseResponse<string>>
 public class DeletePlannerTaskCommandHandler : IRequestHandler<DeletePlannerTaskCommand, BaseResponse<string>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeletePlannerTaskCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public DeletePlannerTaskCommandHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public DeletePlannerTaskCommandHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -46,6 +50,12 @@ public class DeletePlannerTaskCommandHandler : IRequestHandler<DeletePlannerTask
         {
             throw new NotFoundException($"Planner task with id {request.Id} was not found.");
         }
+
+        await _context.EnsureCalendarWritableAsync(
+            entity.CalendarId,
+            _user.UserId,
+            $"Planner task with id {request.Id} was not found.",
+            cancellationToken);
 
         _context.PlannerTasks.Remove(entity);
 

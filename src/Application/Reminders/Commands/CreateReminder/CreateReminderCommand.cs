@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.Reminders.Dtos;
 using Domain.Common;
 using Domain.Entities;
@@ -36,14 +37,17 @@ public class CreateReminderCommand : IRequest<BaseResponse<ReminderDto>>
 public class CreateReminderCommandHandler : IRequestHandler<CreateReminderCommand, BaseResponse<ReminderDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateReminderCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public CreateReminderCommandHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public CreateReminderCommandHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -54,6 +58,12 @@ public class CreateReminderCommandHandler : IRequestHandler<CreateReminderComman
     /// <returns>A response containing the created reminder DTO.</returns>
     public async Task<BaseResponse<ReminderDto>> Handle(CreateReminderCommand request, CancellationToken cancellationToken)
     {
+        await _context.EnsureEventWritableAsync(
+            request.EventId,
+            _user.UserId,
+            $"Event with id {request.EventId} was not found.",
+            cancellationToken);
+
         var entity = new Reminder
         {
             Title = request.Title,

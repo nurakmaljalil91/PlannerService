@@ -10,6 +10,8 @@ namespace Application.UnitTests.Events;
 /// </summary>
 public class CreateEventCommandHandlerTests
 {
+    private static readonly Guid Owner = Guid.NewGuid();
+
     /// <summary>
     /// Verifies that <see cref="CreateEventCommandHandler.Handle"/> creates an event and returns
     /// a successful response containing the created event DTO.
@@ -19,11 +21,11 @@ public class CreateEventCommandHandlerTests
     {
         await using var context = TestDbContextFactory.Create();
 
-        var calendar = new Calendar { Title = "Test Calendar", UserId = Guid.NewGuid() };
+        var calendar = new Calendar { Title = "Test Calendar", UserId = Owner };
         context.Calendars.Add(calendar);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new CreateEventCommandHandler(context);
+        var handler = new CreateEventCommandHandler(context, new TestUser(Owner));
         var start = new DateTime(2026, 5, 1, 9, 0, 0, DateTimeKind.Utc);
         var end = new DateTime(2026, 5, 1, 10, 0, 0, DateTimeKind.Utc);
 

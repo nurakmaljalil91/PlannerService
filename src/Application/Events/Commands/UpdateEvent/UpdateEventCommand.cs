@@ -2,6 +2,7 @@
 using System;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.Events.Dtos;
 using Domain.Common;
 using FluentValidation;
@@ -66,14 +67,17 @@ public class UpdateEventCommand : IRequest<BaseResponse<EventDto>>
 public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, BaseResponse<EventDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateEventCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public UpdateEventCommandHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public UpdateEventCommandHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -90,6 +94,12 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Bas
         {
             throw new NotFoundException($"Event with id {request.Id} was not found.");
         }
+
+        await _context.EnsureCalendarWritableAsync(
+            entity.CalendarId,
+            _user.UserId,
+            $"Event with id {request.Id} was not found.",
+            cancellationToken);
 
         entity.Title = request.Title ?? entity.Title;
         entity.Description = request.Description ?? entity.Description;

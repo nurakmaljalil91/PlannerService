@@ -1,5 +1,6 @@
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Domain.Common;
 using Mediator;
 
@@ -22,14 +23,17 @@ public class DeleteReminderCommand : IRequest<BaseResponse<string>>
 public class DeleteReminderCommandHandler : IRequestHandler<DeleteReminderCommand, BaseResponse<string>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeleteReminderCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public DeleteReminderCommandHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public DeleteReminderCommandHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -46,6 +50,12 @@ public class DeleteReminderCommandHandler : IRequestHandler<DeleteReminderComman
         {
             throw new NotFoundException($"Reminder with id {request.Id} was not found.");
         }
+
+        await _context.EnsureEventWritableAsync(
+            entity.EventId,
+            _user.UserId,
+            $"Reminder with id {request.Id} was not found.",
+            cancellationToken);
 
         _context.Reminders.Remove(entity);
 

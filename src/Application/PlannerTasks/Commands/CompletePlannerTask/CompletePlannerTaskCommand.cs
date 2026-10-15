@@ -1,5 +1,6 @@
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.PlannerTasks.Dtos;
 using Domain.Common;
 using Mediator;
@@ -28,14 +29,17 @@ public class CompletePlannerTaskCommand : IRequest<BaseResponse<PlannerTaskDto>>
 public class CompletePlannerTaskCommandHandler : IRequestHandler<CompletePlannerTaskCommand, BaseResponse<PlannerTaskDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CompletePlannerTaskCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public CompletePlannerTaskCommandHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public CompletePlannerTaskCommandHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -52,6 +56,12 @@ public class CompletePlannerTaskCommandHandler : IRequestHandler<CompletePlanner
         {
             throw new NotFoundException($"Planner task with id {request.Id} was not found.");
         }
+
+        await _context.EnsureCalendarWritableAsync(
+            entity.CalendarId,
+            _user.UserId,
+            $"Planner task with id {request.Id} was not found.",
+            cancellationToken);
 
         entity.IsCompleted = request.IsCompleted;
 

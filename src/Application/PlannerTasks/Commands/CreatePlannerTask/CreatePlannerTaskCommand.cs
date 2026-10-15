@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.PlannerTasks.Dtos;
 using Domain.Common;
 using Domain.Entities;
@@ -52,14 +53,17 @@ public class CreatePlannerTaskCommand : IRequest<BaseResponse<PlannerTaskDto>>
 public class CreatePlannerTaskCommandHandler : IRequestHandler<CreatePlannerTaskCommand, BaseResponse<PlannerTaskDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreatePlannerTaskCommandHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public CreatePlannerTaskCommandHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public CreatePlannerTaskCommandHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -70,6 +74,12 @@ public class CreatePlannerTaskCommandHandler : IRequestHandler<CreatePlannerTask
     /// <returns>A response containing the created planner task DTO.</returns>
     public async Task<BaseResponse<PlannerTaskDto>> Handle(CreatePlannerTaskCommand request, CancellationToken cancellationToken)
     {
+        await _context.EnsureCalendarWritableAsync(
+            request.CalendarId,
+            _user.UserId,
+            $"Calendar with id {request.CalendarId} was not found.",
+            cancellationToken);
+
         var entity = new PlannerTask
         {
             Title = request.Title,

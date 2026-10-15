@@ -1,6 +1,7 @@
 #nullable enable
 using Application.Common.Extensions;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.Common.Models;
 using Application.PlannerTasks.Dtos;
 using Domain.Common;
@@ -36,14 +37,17 @@ public class GetPlannerTasksQuery : PaginatedRequest, IRequest<BaseResponse<Pagi
 public class GetPlannerTasksQueryHandler : IRequestHandler<GetPlannerTasksQuery, BaseResponse<PaginatedEnumerable<PlannerTaskDto>>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetPlannerTasksQueryHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public GetPlannerTasksQueryHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public GetPlannerTasksQueryHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -56,7 +60,8 @@ public class GetPlannerTasksQueryHandler : IRequestHandler<GetPlannerTasksQuery,
         GetPlannerTasksQuery request,
         CancellationToken cancellationToken)
     {
-        var query = _context.PlannerTasks.AsQueryable();
+        var calendarIds = _context.ListedCalendarIds(_user.UserId, request.CalendarId);
+        var query = _context.PlannerTasks.Where(t => calendarIds.Contains(t.CalendarId));
 
         if (request.CalendarId.HasValue)
         {

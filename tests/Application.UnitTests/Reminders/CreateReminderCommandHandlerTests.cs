@@ -9,6 +9,8 @@ namespace Application.UnitTests.Reminders;
 /// </summary>
 public class CreateReminderCommandHandlerTests
 {
+    private static readonly Guid Owner = Guid.NewGuid();
+
     /// <summary>
     /// Verifies that <see cref="CreateReminderCommandHandler.Handle"/> creates a reminder and
     /// returns a successful response containing the created reminder DTO.
@@ -18,7 +20,7 @@ public class CreateReminderCommandHandlerTests
     {
         await using var context = TestDbContextFactory.Create();
 
-        var calendar = new Calendar { Title = "Cal", UserId = Guid.NewGuid() };
+        var calendar = new Calendar { Title = "Cal", UserId = Owner };
         context.Calendars.Add(calendar);
         await context.SaveChangesAsync(CancellationToken.None);
 
@@ -32,7 +34,7 @@ public class CreateReminderCommandHandlerTests
         context.Events.Add(evt);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new CreateReminderCommandHandler(context);
+        var handler = new CreateReminderCommandHandler(context, new TestUser(Owner));
         var reminderTime = new DateTime(2026, 5, 1, 8, 45, 0, DateTimeKind.Utc);
 
         var command = new CreateReminderCommand

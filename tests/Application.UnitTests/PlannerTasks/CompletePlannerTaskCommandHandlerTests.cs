@@ -11,6 +11,8 @@ namespace Application.UnitTests.PlannerTasks;
 /// </summary>
 public class CompletePlannerTaskCommandHandlerTests
 {
+    private static readonly Guid Owner = Guid.NewGuid();
+
     /// <summary>
     /// Verifies that <see cref="CompletePlannerTaskCommandHandler.Handle"/> throws a <see cref="NotFoundException"/>
     /// when the specified task does not exist.
@@ -19,7 +21,7 @@ public class CompletePlannerTaskCommandHandlerTests
     public async Task Handle_WhenTaskMissing_ThrowsNotFoundException()
     {
         await using var context = TestDbContextFactory.Create();
-        var handler = new CompletePlannerTaskCommandHandler(context);
+        var handler = new CompletePlannerTaskCommandHandler(context, new TestUser(Owner));
 
         var command = new CompletePlannerTaskCommand { Id = 999, IsCompleted = true };
 
@@ -35,7 +37,7 @@ public class CompletePlannerTaskCommandHandlerTests
     {
         await using var context = TestDbContextFactory.Create();
 
-        var calendar = new Calendar { Title = "Cal", UserId = Guid.NewGuid() };
+        var calendar = new Calendar { Title = "Cal", UserId = Owner };
         context.Calendars.Add(calendar);
         await context.SaveChangesAsync(CancellationToken.None);
 
@@ -49,7 +51,7 @@ public class CompletePlannerTaskCommandHandlerTests
         context.PlannerTasks.Add(task);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new CompletePlannerTaskCommandHandler(context);
+        var handler = new CompletePlannerTaskCommandHandler(context, new TestUser(Owner));
         var result = await handler.Handle(
             new CompletePlannerTaskCommand { Id = task.Id, IsCompleted = true },
             CancellationToken.None);

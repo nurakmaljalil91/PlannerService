@@ -1,5 +1,6 @@
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.Events.Dtos;
 using Domain.Common;
 using Mediator;
@@ -23,14 +24,17 @@ public class GetEventByIdQuery : IRequest<BaseResponse<EventDto>>
 public class GetEventByIdQueryHandler : IRequestHandler<GetEventByIdQuery, BaseResponse<EventDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUser _user;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetEventByIdQueryHandler"/> class.
     /// </summary>
     /// <param name="context">The application database context.</param>
-    public GetEventByIdQueryHandler(IApplicationDbContext context)
+    /// <param name="user">The current authenticated user.</param>
+    public GetEventByIdQueryHandler(IApplicationDbContext context, IUser user)
     {
         _context = context;
+        _user = user;
     }
 
     /// <summary>
@@ -47,6 +51,12 @@ public class GetEventByIdQueryHandler : IRequestHandler<GetEventByIdQuery, BaseR
         {
             throw new NotFoundException($"Event with id {request.Id} was not found.");
         }
+
+        await _context.EnsureCalendarReadableAsync(
+            entity.CalendarId,
+            _user.UserId,
+            $"Event with id {request.Id} was not found.",
+            cancellationToken);
 
         return BaseResponse<EventDto>.Ok(new EventDto(entity));
     }
